@@ -3,13 +3,21 @@
     <view class="top_bg" />
     <view class="main_content">
         <view class="userinfo_container">
-            <image class="avatar" src="../../images/icons/avatar.png" bind:tap="getOpenId" mode="widthFix" />
+            <block wx:if="{{!userInfo.avatarUrl}}">
+                <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+                    <image class="avatar" src="{{defAvartarUrl}}"></image>
+                </button>
+            </block>
+            <block wx:else>
+                <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
+            </block>
             <block wx:if="{{ !userInfo.nickName }}">
-                <view class="username" bind:tap="getOpenId">请点击登录</view>
+                <input class="username" bindinput="onInputNickname" type="nickname" name="nickname" placeholder="请输入昵称" />
             </block>
             <block wx:else>
                 <view class="username">{{ userInfo.nickName }}</view>
             </block>
+            <view class="btnSaved" bind:tap="saveUserInfo">保存</view>
         </view>
         <view class="settings_container">
             <!-- <view class="setting_item">
