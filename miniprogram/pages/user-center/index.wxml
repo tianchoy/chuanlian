@@ -33,6 +33,27 @@
         </view>
         <image class="arrow_icon" src="../../images/arrow.svg" />
       </view> -->
+            <view class="setting_item" bind:tap="gotoWxCodePage">
+                <view class="left">
+                    <image class="setting_icon" src="../../images/icons/customer-service.svg" />
+                    <view class="setting_text">我的简历</view>
+                </view>
+                <image class="arrow_icon" src="../../images/arrow.svg" />
+            </view>
+            <view class="setting_item" bind:tap="gotoWxCodePage">
+                <view class="left">
+                    <image class="setting_icon" src="../../images/icons/customer-service.svg" />
+                    <view class="setting_text">投递记录</view>
+                </view>
+                <image class="arrow_icon" src="../../images/arrow.svg" />
+            </view>
+            <view class="setting_item" bind:tap="gotoWxCodePage">
+                <view class="left">
+                    <image class="setting_icon" src="../../images/icons/customer-service.svg" />
+                    <view class="setting_text">收到的简历</view>
+                </view>
+                <image class="arrow_icon" src="../../images/arrow.svg" />
+            </view>
             <view class="setting_item">
                 <view class="left">
                     <image class="setting_icon" src="../../images/icons/customer-service.svg" />
