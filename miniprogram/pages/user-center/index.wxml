@@ -17,7 +17,6 @@
             <block wx:else>
                 <view class="username">{{ userInfo.nickName }}</view>
             </block>
-            <view class="btnSaved" bind:tap="saveUserInfo">保存</view>
         </view>
         <view class="settings_container">
             <!-- <view class="setting_item">
