@@ -6,7 +6,7 @@ const db = cloud.database()
 // 云函数入口函数
 exports.main = async (event, context) => {
     const wxContext = cloud.getWXContext()
-    const { type, userAvatar, nickName } = event
+    const { type } = event
     const openid = wxContext.OPENID
     if (type == "get") {
         // 查询用户
