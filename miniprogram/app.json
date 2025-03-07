@@ -1,8 +1,9 @@
 {
   "pages": [
+
+    "pages/user-center/index",
     "pages/index/index",
-    "pages/post/index",
-    "pages/user-center/index"
+    "pages/post/index"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",

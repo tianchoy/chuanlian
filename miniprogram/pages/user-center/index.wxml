@@ -3,13 +3,13 @@
     <view class="top_bg" />
     <view class="main_content">
         <view class="userinfo_container">
-            <block wx:if="{{!userInfo.avatarUrl}}">
+            <block wx:if="{{!userInfo.userAvatar}}">
                 <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
                     <image class="avatar" src="{{defAvartarUrl}}"></image>
                 </button>
             </block>
             <block wx:else>
-                <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
+                <image class="avatar" src="{{userInfo.userAvatar}}"></image>
             </block>
             <block wx:if="{{ !userInfo.nickName }}">
                 <input class="username" bindinput="onInputNickname" type="nickname" name="nickname" placeholder="请输入昵称" />
