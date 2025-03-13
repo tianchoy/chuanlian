@@ -21,6 +21,7 @@
     "color": "#A2A9B0",
     "selectedColor": "#07C160",
     "backgroundColor": "#ffffff",
+    "custom": true,
     "list": [
       {
         "pagePath": "pages/index/index",

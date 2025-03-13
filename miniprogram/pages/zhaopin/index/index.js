@@ -1,6 +1,29 @@
 Page({
     data: {
         isLogin:true,
+        tabList: [
+            {
+              pagePath: '/pages/zhaopin/index/index',
+              text: '首页',
+              iconPath: '/images/icons/home.png',
+              selectedIconPath: '/images/icons/home-active.png',
+              isTab: true
+            },
+            {
+              pagePath: '/pages/category/category',
+              text: '分类',
+              iconPath: '/images/icons/business.png',
+              selectedIconPath: '/images/icons/business-active.png',
+              isTab: true
+            },
+            {
+              pagePath: '/pages/user-center/index', // 普通页面
+              text: '个人中心',
+              iconPath: '/images/icons/usercenter.png',
+              selectedIconPath: '/images/icons/usercenter-active.png',
+              isTab: true
+            }
+          ],
         tabs: [
             { name: '一类轮机长', tag: '已下架' },
             { name: '二类轮机长', tag: '招聘中' },
@@ -21,8 +44,8 @@ Page({
         ],
         jobLists: [
             [
-                { title: '一类轮机长', salary: '8000', route: '上海~武汉', date: '2月10号' },
-                { title: '一类轮机长', salary: '8200', route: '上海~武汉', date: '2月10号' }
+                { title: '一类轮机长', salary: '8000', route: '上海~武汉', date: '2月10号',id:1 },
+                { title: '一类轮机长', salary: '8200', route: '上海~武汉', date: '2月10号',id:2 }
             ],
             [
                 { title: '二类轮机长', salary: '6000', route: '上海~武汉', date: '2月10号' },
@@ -89,7 +112,8 @@ Page({
         scrollLeft: 0, // 选项卡滚动位置
         swiperHeight: 0, // swiper 的高度
         tabWidth: 117, // 每个 Tab 的宽度
-        screenWidth: 0 // 屏幕宽度
+        screenWidth: 0 ,// 屏幕宽度
+        activeIndex: 0 // 当前选中的 tab 索引
     },
 
     onLoad() {
@@ -103,7 +127,16 @@ Page({
             screenWidth: screenWidth
         });
     },
-
+    toDetail(e){
+        const id= e.target.dataset.id
+        console.log('aaab',id)
+    },
+    handleTabChange(event) {
+        const { index } = event.detail;
+        this.setData({
+          activeIndex: index
+        });
+      },
     //去登陆
     toLogin(){
         console.log('去登陆111')

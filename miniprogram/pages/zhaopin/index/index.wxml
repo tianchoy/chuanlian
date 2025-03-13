@@ -10,11 +10,13 @@
         <swiper-item wx:for="{{jobLists}}" wx:key="index">
             <view class="item">
                 <block wx:for="{{jobLists[index]}}" wx:key="id">
-                    <list-item item="{{item}}"></list-item>
+                    <list-item item="{{item}}" bind:tap="toDetail" data-id="{{item.id}}"></list-item>
                 </block>
             </view>
         </swiper-item>
     </swiper>
     <!--  未登陆的情况下，展示  -->
     <isLogin isLogin="{{!isLogin}}" bind:toLogin="toLogin" />
+    <!--自定义的tabBar-->
+    <tabBar tabList="{{tabList}}" activeIndex="{{activeIndex}}" bind:tabChange="handleTabChange" />
 </view>
