@@ -1,0 +1,5 @@
+<!--components/zhaopin/list-item/list-item.wxml-->
+<view class="list-item">
+  <view class="title">{{item.title}}</view>
+  <view class="content"> 薪资：{{item.salary}} {{item.route}} {{item.date}}</view>
+</view>

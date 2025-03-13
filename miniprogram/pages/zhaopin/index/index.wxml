@@ -1,0 +1,20 @@
+<view class="container">
+    <!-- 顶部选项卡 -->
+    <scroll-view scroll-x="true" class="tabs" scroll-with-animation scroll-left="{{scrollLeft}}">
+        <view wx:for="{{tabs}}" wx:key="index" class="tab {{currentTab === index ? 'active' : ''}}" bindtap="switchTab" data-index="{{index}}">
+            <text>{{item.name}}</text>
+        </view>
+    </scroll-view>
+    <!-- 内容区域 -->
+    <swiper class="content" current="{{currentTab}}" duration="300" bindchange="swiperChange" style="height: {{swiperHeight}}px;">
+        <swiper-item wx:for="{{jobLists}}" wx:key="index">
+            <view class="item">
+                <block wx:for="{{jobLists[index]}}" wx:key="id">
+                    <list-item item="{{item}}"></list-item>
+                </block>
+            </view>
+        </swiper-item>
+    </swiper>
+    <!--  未登陆的情况下，展示  -->
+    <isLogin isLogin="{{!isLogin}}" bind:toLogin="toLogin" />
+</view>

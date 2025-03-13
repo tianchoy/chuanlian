@@ -1,0 +1,4 @@
+<!--components/isLogin/isLogin.wxml-->
+<view class="btLoginView" wx:if="{{isLogin}}">
+    <text class="btLogin" bindtap="toLogin">登陆</text>
+</view>
