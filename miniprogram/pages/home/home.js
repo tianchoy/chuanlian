@@ -8,15 +8,15 @@ Page({
     },
 
     goToRecruit() {
-        console.log('bbb')
-        wx.switchTab({
-          url: '/pages/post/index',
+        console.log('aaa')
+        wx.reLaunch({
+          url: '/pages/index/index',
         });
       },
     
       // 跳转到求职页面
       goToJob() {
-        wx.redirectTo({
+        wx.switchTab({
           url: '/pages/qiuzhi/index/index',
         });
       },

@@ -1,0 +1,15 @@
+/* pages/index/index.wxss */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+button {
+  width: 200px;
+}
