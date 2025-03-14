@@ -1,2 +1,4 @@
 <view class="container">
+    <button bindtap="goToRecruit">招聘发布</button>
+    <button bindtap="goToJob">求职发布</button>
 </view>

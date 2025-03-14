@@ -26,7 +26,9 @@ Page({
               type:'get'
           }
       })
-      console.log(res)
+      console.log(res.result._id)
+      const userid = res.result._id
+      wx.setStorageSync('userId', userid)
       that.setData({
           userInfo:res.result
       })
