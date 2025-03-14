@@ -1,11 +1,9 @@
 {
   "pages": [
-    "pages/home/home",
-    "pages/index/index",
+    "pages/recruiter/recruiter",
+    "pages/jobseeker/jobseeker",
     "pages/post/index",
-    "pages/user-center/index",
-    "pages/zhaopin/index/index",
-    "pages/qiuzhi/index/index"
+    "pages/user-center/index"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
@@ -21,11 +19,16 @@
     "color": "#A2A9B0",
     "selectedColor": "#07C160",
     "backgroundColor": "#ffffff",
-    "custom": true,
     "list": [
       {
-        "pagePath": "pages/index/index",
-        "text": "推荐",
+        "pagePath": "pages/recruiter/recruiter",
+        "text": "找船",
+        "iconPath": "images/icons/home.png",
+        "selectedIconPath": "images/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/jobseeker/jobseeker",
+        "text": "找人",
         "iconPath": "images/icons/home.png",
         "selectedIconPath": "images/icons/home-active.png"
       },
@@ -48,8 +51,10 @@
       "desc": "用于展示用户信息"
     },
     "scope.userLocation": {
-        "desc": "你的位置信息将用于小程序位置接口的效果展示"
-      }
+      "desc": "你的位置信息将用于小程序位置接口的效果展示"
+    }
   },
-  "requiredPrivateInfos": ["getLocation"]
+  "requiredPrivateInfos": [
+    "getLocation"
+  ]
 }
