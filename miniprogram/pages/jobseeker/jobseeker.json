@@ -1,3 +1,5 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "isLogin": "/components/isLogin/isLogin"
+  }
 }

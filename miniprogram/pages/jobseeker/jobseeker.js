@@ -5,6 +5,8 @@ Page({
      * 页面的初始数据
      */
     data: {
+        isLogin: false,
+        isLoading: false,
         tabs: [
             { name: '一类轮机长', tag: '已下架' },
             { name: '二类轮机长', tag: '招聘中' },
@@ -109,6 +111,23 @@ Page({
             screenWidth: screenWidth
         });
     },
+    //如果用户没有登陆，则去用户中心登陆
+    toLogin() {
+        wx.switchTab({
+            url: '/pages/user-center/index',
+        })
+    },
+    //获取用户id来确定用户是否是登陆了
+    getUserId() {
+        this.setData({ isLoading: true }); // 开始加载
+        const userid = wx.getStorageSync('userId');
+        console.log('用户ID:', userid);
+        this.setData({
+            isLogin: !!userid, // 更新登录状态
+            isLoading: false, // 结束加载
+        });
+        console.log('加载状态:', this.data.isLoading);
+    },
     // 切换 Tab
     switchTab(e) {
         const index = e.currentTarget.dataset.index;
@@ -146,7 +165,12 @@ Page({
      * 生命周期函数--监听页面显示
      */
     onShow() {
-
+        // 页面显示时执行
+        console.log('onShow 加载状态:', this.data.isLoading);
+        if (!this.data.isLogin && !this.data.isLoading) {
+            console.log('用户未登录，重新获取用户ID');
+            this.getUserId();
+        }
     },
 
     /**

@@ -1,4 +1,16 @@
 <view class="container">
-    <button bindtap="goToRecruit">招聘发布</button>
-    <button bindtap="goToJob">求职发布</button>
+    <view class="list-box">
+        <view class="list-item"  wx:for="{{jobLists}}" wx:key="index">
+            <block wx:for="{{jobLists[index]}}" wx:key="id">
+                <list-item item="{{item}}" bind:tap="toDetail" data-id="{{item.id}}"></list-item>
+            </block>
+        </view>
+    </view>
+    <!--  未登陆的情况下，展示  -->
+    <isLogin isLogin="{{!isLogin}}" bind:toLogin="toLogin" />
+    <!--  已登陆的情况下，展示发布button  -->
+    <view class="button-container" wx:if="{{isLogin}}">
+        <view class="custom-btn" bind:tap="publish" data-type="publishJobPost">发布招聘</view>
+        <view class="custom-btn" bind:tap="publish" data-type="publishJobSeeking">发布求职</view>
+    </view>
 </view>
