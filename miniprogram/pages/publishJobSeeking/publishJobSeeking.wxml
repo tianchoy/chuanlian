@@ -1,2 +1,66 @@
 <!--pages/publishJobSeeking/publishJobSeeking.wxml-->
-<text>pages/publishJobSeeking/publishJobSeeking.wxml</text>
+<view class="container">
+<view class="title">个人基本信息</view>
+    <view class="section">
+        <text class="section-title">证书岗位</text>
+        <view class="picker-box">
+            <picker class="picker-item" mode="selector" range="{{certificatePositions}}" bindchange="bindCertificateChange">
+                <view class="picker">
+                    选择证书类别：{{selectedCertificate}}
+                </view>
+            </picker>
+            <picker class="picker-item" mode="selector" range="{{ranks}}" bindchange="bindRankChange">
+                <view class="picker">
+                    选择职业：{{selectedRank}}
+                </view>
+            </picker>
+        </view>
+    </view>
+
+    <view class="section">
+        <text class="section-title">年龄/性别</text>
+        <view class="picker-box">
+            <input placeholder="请输入年龄" bindinput="bindYearInput" class="input" />
+            <picker class="picker-item" mode="selector" range="{{genders}}" bindchange="bindGenderChange">
+                <view class="picker">
+                    性别：{{selectedGender}}
+                </view>
+            </picker>
+        </view>
+    </view>
+
+    <view class="section">
+        <text class="section-title">常驻地点</text>
+        <view class="picker-box">
+            <input placeholder="请输入常驻地点" bindinput="bindLocationInput" class="input" />
+        </view>
+    </view>
+
+    <view class="section">
+        <text class="section-title">待遇期望</text>
+        <view class="picker-box">
+            <picker class="picker-item" mode="selector" range="{{salaryOptions}}" bindchange="bindSalaryChange">
+                <view class="picker">
+                    待遇期望: {{selectedSalary}}
+                </view>
+            </picker>
+            <input placeholder="请输入具体金额" bindinput="bindAmountInput" class="input" />
+        </view>
+    </view>
+
+    <view class="section">
+        <text class="section-title">电话号码</text>
+        <view class="picker-box">
+            <input class="input single" value="{{mobilePhone}}" bindinput="bindMobilePhone" type="number"/>
+        </view>
+    </view>
+
+    <view class="section">
+        <text class="section-title">特长技能描述</text>
+        <view class="picker-box">
+            <textarea placeholder="请输入特长技能描述" bindinput="bindSkillInput" />
+        </view>
+    </view>
+
+    <button bindtap="submitForm">保存提交</button>
+</view>

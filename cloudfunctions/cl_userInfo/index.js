@@ -19,7 +19,8 @@ exports.main = async (event, context) => {
                 data: {
                     nickName: '',
                     userAvatar: '',
-                    openid
+                    openid,
+                    date: new Date()
                 }
             })
             // 重新查询以确保返回数组

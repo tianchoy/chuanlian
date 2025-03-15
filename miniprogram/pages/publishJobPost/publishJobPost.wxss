@@ -1,1 +1,73 @@
-/* pages/publishJobPost/publishJobPost.wxss */
+.container {
+    padding: 20px;
+    background-color: #fff;
+}
+
+.section {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.picker-group {
+    overflow: hidden;    
+}
+.picker-box{
+    width: 50%;
+    float: left;
+}
+.picker {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    text-align: center;
+}
+
+.picker:last-child {
+    margin-right: 0;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.arrow {
+    margin: 0 10px;
+}
+
+.textarea {
+    width: 93%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    min-height: 100px;
+}
+
+.submit-btn {
+    margin-top: 30px;
+    background-color: #007bff;
+    color: white;
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 16px;
+}

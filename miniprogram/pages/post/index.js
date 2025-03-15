@@ -2,12 +2,6 @@ Page({
     data: {
         isLogin: false,
         isLoading: false,
-        tabs: [
-            { name: '已发布', tag: '已下架' },
-            { name: '未发布', tag: '招聘中' },
-            { name: '审核中', tag: '招聘中' },
-            { name: '未过审', tag: '招聘中' },
-        ],
         jobLists: [
             [
                 { title: '一类轮机长', salary: '8000', route: '上海~武汉', date: '2月10号' },
@@ -26,11 +20,6 @@ Page({
                 { title: '一类轮船员', salary: '7000', route: '上海~武汉', date: '2月10号' }
             ],
         ],
-        currentTab: 0, // 当前选中的 Tab
-        scrollLeft: 0, // 选项卡滚动位置
-        swiperHeight: 0, // swiper 的高度
-        tabWidth: 120, // 每个 Tab 的宽度
-        screenWidth: 0 // 屏幕宽度
     },
 
     onLoad: function (options) {
@@ -78,32 +67,6 @@ Page({
         }
     },
 
-    // 切换 Tab
-    switchTab(e) {
-        const index = e.currentTarget.dataset.index;
-        this.setData({
-            currentTab: index
-        });
-        this.adjustScrollPosition(index);
-    },
-    // Swiper 切换事件
-    swiperChange(e) {
-        const index = e.detail.current;
-        this.setData({
-            currentTab: index
-        });
-        this.adjustScrollPosition(index);
-    },
-    // 调整滚动位置，确保选中的 Tab 居中
-    adjustScrollPosition(index) {
-        const { tabWidth, screenWidth } = this.data;
-        const halfScreenWidth = screenWidth / 2; // 屏幕宽度的一半
-        const scrollLeft = index * tabWidth - halfScreenWidth + tabWidth / 2;
-
-        this.setData({
-            scrollLeft: scrollLeft
-        });
-    },
     onShow: function () {
         // 页面显示时执行
         console.log('onShow 加载状态:', this.data.isLoading);
