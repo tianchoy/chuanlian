@@ -1,0 +1,6 @@
+<!--pages/question/question.wxml-->
+<view class="container">
+    <view>
+        <button bindtap="makePhoneCall">拨打电话</button>
+    </view>
+</view>

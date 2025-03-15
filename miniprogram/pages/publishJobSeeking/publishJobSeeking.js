@@ -17,8 +17,7 @@ Page({
         location: '',
         amount: '',
         skill: '',
-        mobilePhone:'',
-        totalMoney:''
+        mobilePhone:''
     },
 
     /**

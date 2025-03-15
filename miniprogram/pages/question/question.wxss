@@ -1,0 +1,10 @@
+/* pages/question/question.wxss */
+.container{
+    padding: 20rpx;
+}
+button {
+    background-color: #07c160; /* 按钮背景色 */
+    color: #ffffff; /* 文字颜色 */
+    border-radius: 10px; /* 圆角 */
+    padding: 10px 20px; /* 内边距 */
+  }

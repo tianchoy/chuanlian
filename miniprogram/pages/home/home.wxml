@@ -1,8 +1,0 @@
-<!-- pages/index/index.wxml -->
-<view class="container">
-  <view class="buttons">
-      <view>Home</view>
-    <button bindtap="goToRecruit">我要招聘</button>
-    <button bindtap="goToJob">我要求职</button>
-  </view>
-</view>

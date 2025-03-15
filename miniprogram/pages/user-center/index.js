@@ -12,6 +12,8 @@ Page({
             userAvatar: '',
             nickName: ''
         },
+        shareTitle: '轮船人自己的小程序！',
+        sharePath: 'pages/recruiter/recruiter',
     },
     onLoad() {
         var that = this
@@ -55,6 +57,14 @@ Page({
         this.saveInfo('nickName', e.detail.value)
     },
 
+    //常见问题页面
+    toqa(){
+        console.log('aaaa')
+        wx.navigateTo({
+          url: '/pages/question/question',
+        })
+    },
+
     //保存用户名和头像
     async saveInfo(types, values) {
         let that = this
@@ -72,5 +82,11 @@ Page({
             userInfo: res.result.data[0]
         })
     },
+    onShareAppMessage(res) {
+        return {
+          title: this.data.shareTitle,
+          path: this.data.sharePath
+        };
+      }
 
 });

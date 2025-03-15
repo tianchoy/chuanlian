@@ -1,11 +1,13 @@
 {
   "pages": [
-    "pages/post/index",
     "pages/recruiter/recruiter",
     "pages/jobseeker/jobseeker",
     "pages/user-center/index",
+    "pages/post/index",
     "pages/publishJobPost/publishJobPost",
-    "pages/publishJobSeeking/publishJobSeeking"
+    "pages/publishJobSeeking/publishJobSeeking",
+    "pages/question/question",
+    "pages/detail/detail"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
