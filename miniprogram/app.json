@@ -1,12 +1,12 @@
 {
   "pages": [
-    "pages/publishJobSeeking/publishJobSeeking",
+    
     "pages/recruiter/recruiter",
     "pages/jobseeker/jobseeker",
     "pages/user-center/index",
     "pages/post/index",
     "pages/publishJobPost/publishJobPost",
-    
+    "pages/publishJobSeeking/publishJobSeeking",
     "pages/question/question",
     "pages/jobDetail/jobDetail",
     "pages/talentDetail/talentDetail"

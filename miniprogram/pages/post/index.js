@@ -61,6 +61,7 @@ Page({
 
     onShow: function () {
         // 页面显示时执行
+        this.getJobsList()
         console.log('onShow 加载状态:', this.data.isLoading);
         if (!this.data.isLogin && !this.data.isLoading) {
             console.log('用户未登录，重新获取用户ID');

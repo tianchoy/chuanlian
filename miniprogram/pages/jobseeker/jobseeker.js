@@ -7,90 +7,8 @@ Page({
     data: {
         isLogin: false,
         isLoading: false,
-        tabs: [
-            { name: '一类轮机长', tag: '已下架' },
-            { name: '二类轮机长', tag: '招聘中' },
-            { name: '三类轮机长', tag: '招聘中' },
-            { name: '一类轮船员', tag: '招聘中' },
-            { name: '二类轮船员', tag: '招聘中' },
-            { name: '三类轮船员', tag: '招聘中' },
-            { name: '一类船长', tag: '招聘中' },
-            { name: '二类船长', tag: '招聘中' },
-            { name: '三类船长', tag: '招聘中' },
-            { name: '一类水手', tag: '招聘中' },
-            { name: '二类水手', tag: '招聘中' },
-            { name: '三类水手', tag: '招聘中' },
-            { name: '一类厨师', tag: '招聘中' },
-            { name: '二类厨师', tag: '招聘中' },
-            { name: '三类厨师', tag: '招聘中' },
-            { name: '其他岗位', tag: '招聘中' }
-        ],
-        jobLists: [
-            [
-                { title: '一类轮机长', salary: '8000', route: '上海~武汉', date: '2月10号' },
-                { title: '一类轮机长', salary: '8000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '二类轮机长', salary: '6000', route: '上海~武汉', date: '2月10号' },
-                { title: '二类轮机长', salary: '6000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '三类轮机长', salary: '5000', route: '上海~武汉', date: '2月10号' },
-                { title: '三类轮机长', salary: '5000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '一类轮船员', salary: '7000', route: '上海~武汉', date: '2月10号' },
-                { title: '一类轮船员', salary: '7000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '二类轮船员', salary: '6000', route: '上海~武汉', date: '2月10号' },
-                { title: '二类轮船员', salary: '6000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '三类轮船员', salary: '5000', route: '上海~武汉', date: '2月10号' },
-                { title: '三类轮船员', salary: '5000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '一类船长', salary: '10000', route: '上海~武汉', date: '2月10号' },
-                { title: '一类船长', salary: '10000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '二类船长', salary: '8000', route: '上海~武汉', date: '2月10号' },
-                { title: '二类船长', salary: '8000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '三类船长', salary: '6000', route: '上海~武汉', date: '2月10号' },
-                { title: '三类船长', salary: '6000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '一类水手', salary: '5000', route: '上海~武汉', date: '2月10号' },
-                { title: '一类水手', salary: '5000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '二类水手', salary: '4000', route: '上海~武汉', date: '2月10号' },
-                { title: '二类水手', salary: '4000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '三类水手', salary: '3000', route: '上海~武汉', date: '2月10号' },
-                { title: '三类水手', salary: '3000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '一类厨师', salary: '6000', route: '上海~武汉', date: '2月10号' },
-                { title: '一类厨师', salary: '6000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '二类厨师', salary: '5000', route: '上海~武汉', date: '2月10号' },
-                { title: '二类厨师', salary: '5000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '三类厨师', salary: '4000', route: '上海~武汉', date: '2月10号' },
-                { title: '三类厨师', salary: '4000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '其他岗位', salary: '5000', route: '上海~武汉', date: '2月10号' },
-                { title: '其他岗位', salary: '5000', route: '上海~武汉', date: '2月10号' }
-            ]
-        ],
+        tabs: [],
+        jobLists: [],
         currentTab: 0, // 当前选中的 Tab
         scrollLeft: 0, // 选项卡滚动位置
         swiperHeight: 0, // swiper 的高度
@@ -110,6 +28,7 @@ Page({
             swiperHeight: windowHeight - tabHeight,
             screenWidth: screenWidth
         });
+        this.getResumesList()
     },
     //如果用户没有登陆，则去用户中心登陆
     toLogin() {
@@ -128,6 +47,23 @@ Page({
             isLoading: false, // 结束加载
         });
         console.log('加载状态:', this.data.isLoading);
+    },
+    //获取求职信息列表
+    getResumesList(){
+        wx.cloud.callFunction({
+            name: 'getResumes',
+            success: res => {
+                console.log(res.result.tabs)
+                console.log(res.result.resumesLists)
+                this.setData({
+                    tabs: res.result.tabs,
+                    jobLists: res.result.resumesLists
+                })
+            },
+            fail: err => {
+                console.error('获取失败',err)
+            }
+        })
     },
     // 切换 Tab
     switchTab(e) {

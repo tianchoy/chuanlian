@@ -1,6 +1,6 @@
 <view class="container">
     <view class="list-box">
-        <view class="list-item" wx:for="{{jobLists}}" wx:key="index">
+        <view class="list-item" wx:for="{{jobLists[0]}}" wx:key="index">
             <view wx:for="{{item}}" wx:key="title">
                 <view class="title-box">
                     <view class="title">
@@ -16,6 +16,25 @@
                     <text>工资:{{item.salary}}{{item.totalSalary}}元 </text>
                     <text> 路线:{{item.route}} </text>
                     <text> 日期:{{item.date}}</text>
+                </view>
+            </view>
+        </view>
+        <view class="list-item" wx:for="{{jobLists[1]}}" wx:key="index">
+            <view wx:for="{{item}}" wx:key="title">
+                <view class="title-box">
+                    <view class="title">
+                        {{item.title}}
+                        <text class="status  status-{{item.rusumesStatus}}">{{status[item.rusumesStatus]}}</text>
+                    </view>
+                    <view class="tools">
+                        <text class="upState">上线</text>
+                        <text class="downState">下线</text>
+                    </view>
+                </view>
+                <view class="item">
+                    <text>工资:{{item.salary}}{{item.totalSalary}}元 </text>
+                    <text> 性别:{{item.selectedGender}} </text>
+                    <text> 年龄:{{item.age}}</text>
                 </view>
             </view>
         </view>
