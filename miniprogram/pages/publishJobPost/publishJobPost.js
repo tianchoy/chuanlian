@@ -41,6 +41,7 @@ Page({
     onLoad(options) {
         this.getOpenid()
     },
+    //获取openid
     getOpenid() {
         this.setData({ isLoading: true }); // 开始加载
         const userinfo = wx.getStorageSync('userinfo');

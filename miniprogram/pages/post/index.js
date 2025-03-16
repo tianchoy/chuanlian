@@ -2,38 +2,29 @@ Page({
     data: {
         isLogin: false,
         isLoading: false,
-        jobLists: [
-            [
-                { title: '一类轮机长', salary: '8000', route: '上海~武汉', date: '2月10号' },
-                { title: '一类轮机长', salary: '8000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '二类轮机长', salary: '6000', route: '上海~武汉', date: '2月10号' },
-                { title: '二类轮机长', salary: '6000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '三类轮机长', salary: '5000', route: '上海~武汉', date: '2月10号' },
-                { title: '三类轮机长', salary: '5000', route: '上海~武汉', date: '2月10号' }
-            ],
-            [
-                { title: '一类轮船员', salary: '7000', route: '上海~武汉', date: '2月10号' },
-                { title: '一类轮船员', salary: '7000', route: '上海~武汉', date: '2月10号' }
-            ],
-        ],
+        status:['审核中','未过审','已审核','已下线'],
+        jobLists: [],
     },
 
     onLoad: function (options) {
         // 页面创建时执行
         this.getUserId()
-        // 获取屏幕宽度
-        const systemInfo = wx.getSystemInfoSync();
-        const windowHeight = systemInfo.windowHeight;
-        const screenWidth = systemInfo.screenWidth;
-        const tabHeight = 50; // 顶部选项卡的高度
-        this.setData({
-            swiperHeight: windowHeight - tabHeight,
-            screenWidth: screenWidth
-        });
+        this.getJobsList()
+    },
+    //获取发布职位列表
+    getJobsList(){
+        wx.cloud.callFunction({
+            name: 'postJobLists',
+            success: res => {
+                console.log(res.result.jobLists)
+                this.setData({
+                    jobLists: res.result.jobLists
+                })
+            },
+            fail: err => {
+                console.error(err)
+            }
+        })
     },
     //获取用户id来确定用户是否是登陆了
     getUserId() {

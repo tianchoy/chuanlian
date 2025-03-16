@@ -1,6 +1,7 @@
 /* pages/publishJobSeeking/publishJobSeeking.wxss */
 .container {
     padding: 20px;
+    background-color: #fff;
 }
 
 .section {

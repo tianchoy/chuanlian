@@ -3,15 +3,21 @@
     padding: 10px;
     width: 100%;
     border-bottom: 1px solid #eee;
-  }
-  .title {
+}
+
+.title {
     font-weight: bold;
-  }
-  .content {
+    margin-bottom: 20rpx;
+}
+
+.content {
+    display: flex;
+    justify-content: space-between;
     color: #666;
     font-size: 28rpx;
-  }
-  .content text{
-      display: inline-block;
-      margin-right: 30rpx;
-  }
+}
+
+.content text {
+    display: inline-block;
+    margin-right: 30rpx;
+}

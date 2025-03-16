@@ -1,4 +1,4 @@
-// pages/detail/detail.js
+// pages/talentDetail/talentDetail.js
 Page({
 
   /**

@@ -17,16 +17,31 @@ Page({
         location: '',
         amount: '',
         skill: '',
-        mobilePhone:'',
+        mobilePhone: '',
         charCount: 0,
-        maxLength: 50
+        maxLength: 50,
+        openid:'',
+        isLogin:false,
+        isLoading:false
     },
 
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
-
+        this.getOpenid()
+    },
+    getOpenid() {
+        this.setData({ isLoading: true }); // 开始加载
+        const userinfo = wx.getStorageSync('userinfo');
+        console.log('用户ID:', userinfo);
+        const userid = userinfo.nickName
+        const openid = userinfo.openid
+        this.setData({
+            openid,
+            isLogin: !!userid, // 更新登录状态
+            isLoading: false, // 结束加载
+        })
     },
     //设置个人证书类别
     bindCertificateChange: function (e) {
@@ -80,22 +95,22 @@ Page({
     },
 
     //处理电话号码
-    bindMobilePhone(e){
+    bindMobilePhone(e) {
         const phoneNumber = e.detail.value
         if (!this.validatePhoneNumber(phoneNumber)) {
             wx.showToast({
-              title: '请输入有效的手机号码',
-              icon: 'none'
+                title: '请输入有效的手机号码',
+                icon: 'none'
             });
             return;
-          }
-          this.setData({mobilePhone:phoneNumber})
+        }
+        this.setData({ mobilePhone: phoneNumber })
     },
-    validatePhoneNumber: function(phoneNumber) {
+    validatePhoneNumber: function (phoneNumber) {
         // 简单的手机号码验证逻辑
         const reg = /^1[3456789]\d{9}$/;
         return reg.test(phoneNumber);
-      },
+    },
 
     submitForm: function () {
         const {
@@ -109,7 +124,7 @@ Page({
             skill,
             mobilePhone,
         } = this.data;
-        if(!selectedCertificate || !selectedRank || !selectedGender || !year || !location || !selectedSalary || !amount || !skill || !mobilePhone){
+        if (!selectedCertificate || !selectedRank || !selectedGender || !year || !location || !selectedSalary || !amount || !skill || !mobilePhone) {
             wx.showToast({
                 title: '请填写完整信息',
                 icon: 'none',
@@ -122,23 +137,44 @@ Page({
             icon: 'success',
         });
         const formData = {
-            certificate: selectedCertificate,
-            rank: selectedRank,
-            gender: selectedGender,
-            year: year,
-            location: location,
-            salary: selectedSalary,
-            amount: amount,
-            skill: skill,
-            mobilePhone:mobilePhone
+            openid:this.data.openid, // openid
+            selectedCertificate, // 职位大类
+            selectedRank, // 职位名称
+            age: year, //年龄
+            selectedGender,//性别
+            amount,  //金额
+            selectedSalary, // 月薪、日薪
+            location,// 上船地点
+            skill, //技能描述
+            mobilePhone, // 电话号码
+            rusumesStatus: '0'
         };
         console.log(formData);
         // 这里可以添加提交表单的逻辑
+        wx.cloud.callFunction({
+            name: 'addResume',
+            data: formData,
+            success: res => {
+                wx.showToast({
+                    title: '发布成功，请等审核',
+                    icon: 'success',
+                });
+                console.log('发布成功', res)
+                wx.navigateBack()
+            },
+            fail: err => {
+                wx.showToast({
+                    title: '发布失败，请修改',
+                    icon: 'success',
+                });
+                console.error('发布失败', err)
+            }
+        })
     },
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
+    /**
+     * 生命周期函数--监听页面初次渲染完成
+     */
+    onReady() {
 
     },
 
@@ -146,7 +182,12 @@ Page({
      * 生命周期函数--监听页面显示
      */
     onShow() {
-
+        // 页面显示时执行
+        console.log('onShow 加载状态:', this.data.isLoading);
+        if (!this.data.isLogin && !this.data.isLoading) {
+            console.log('用户未登录，重新获取用户ID');
+            this.getOpenid();
+        }
     },
 
     /**

@@ -4,7 +4,22 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
+    background-color: #fff;
   }
+
+  /* 居中容器 */
+.empty-container {
+    flex: 1; /* 占据剩余空间 */
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+}
+
+/* 暂无更多数据样式 */
+.empty-text {
+    color: #999;
+    font-size: 14px;
+}
   
   /* 顶部选项卡样式 */
   .tabs {

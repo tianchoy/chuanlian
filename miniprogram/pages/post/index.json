@@ -1,6 +1,5 @@
 {
   "usingComponents": {
-    "list-item": "/components/zhaopin/list-item/list-item",
     "isLogin": "/components/isLogin/isLogin"
   },
   "navigationBarTitleText": "发布"

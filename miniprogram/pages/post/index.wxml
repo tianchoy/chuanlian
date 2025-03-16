@@ -1,9 +1,23 @@
 <view class="container">
     <view class="list-box">
-        <view class="list-item"  wx:for="{{jobLists}}" wx:key="index">
-            <block wx:for="{{jobLists[index]}}" wx:key="id">
-                <list-item item="{{item}}" bind:tap="toDetail" data-id="{{item.id}}"></list-item>
-            </block>
+        <view class="list-item" wx:for="{{jobLists}}" wx:key="index">
+            <view wx:for="{{item}}" wx:key="title">
+                <view class="title-box">
+                    <view class="title">
+                        {{item.title}}
+                        <text class="status  status-{{item.status}}">{{status[item.status]}}</text>
+                    </view>
+                    <view class="tools">
+                        <text class="upState">上线</text>
+                        <text class="downState">下线</text>
+                    </view>
+                </view>
+                <view class="item">
+                    <text>工资:{{item.salary}}{{item.totalSalary}}元 </text>
+                    <text> 路线:{{item.route}} </text>
+                    <text> 日期:{{item.date}}</text>
+                </view>
+            </view>
         </view>
     </view>
     <!--  未登陆的情况下，展示  -->

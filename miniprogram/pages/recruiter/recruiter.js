@@ -45,14 +45,18 @@ Page({
                 })
             },
             fail: err => {
-                console.error(err)
+                console.error('获取失败',err)
             }
         })
     },
 
     //跳转至详情页面 
     toDetail(e){
-        console.log(e.target.dataset.id)
+        const id = e.target.dataset.id
+        console.log(id)
+        wx.navigateTo({
+          url: '/pages/jobDetail/jobDetail?id='+id,
+        })
     },
 
 
