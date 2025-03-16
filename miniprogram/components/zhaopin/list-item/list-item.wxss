@@ -9,4 +9,9 @@
   }
   .content {
     color: #666;
+    font-size: 28rpx;
+  }
+  .content text{
+      display: inline-block;
+      margin-right: 30rpx;
   }

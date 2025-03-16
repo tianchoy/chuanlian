@@ -120,8 +120,9 @@ Page({
     //获取用户id来确定用户是否是登陆了
     getUserId() {
         this.setData({ isLoading: true }); // 开始加载
-        const userid = wx.getStorageSync('userId');
-        console.log('用户ID:', userid);
+        const userinfo = wx.getStorageSync('userinfo');
+        console.log('用户ID:', userinfo);
+        const userid = userinfo.nickName
         this.setData({
             isLogin: !!userid, // 更新登录状态
             isLoading: false, // 结束加载

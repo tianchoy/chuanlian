@@ -17,7 +17,9 @@ Page({
         location: '',
         amount: '',
         skill: '',
-        mobilePhone:''
+        mobilePhone:'',
+        charCount: 0,
+        maxLength: 50
     },
 
     /**
@@ -70,7 +72,9 @@ Page({
     },
     //设置个人技能描述
     bindSkillInput: function (e) {
+        const value = e.detail.value;
         this.setData({
+            charCount: value.length,
             skill: e.detail.value
         });
     },

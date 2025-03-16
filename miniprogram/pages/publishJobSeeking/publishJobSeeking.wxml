@@ -58,7 +58,8 @@
     <view class="section">
         <text class="section-title">特长技能描述</text>
         <view class="picker-box">
-            <textarea placeholder="请输入特长技能描述" bindinput="bindSkillInput" />
+            <textarea placeholder="请输入特长技能描述" bindinput="bindSkillInput" value="{{skill}}"  maxlength="50" auto-height />
+            <view>已输入 {{charCount}}/50 字</view>
         </view>
     </view>
 

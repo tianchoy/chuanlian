@@ -35,7 +35,7 @@
                     {{selectedDate ? selectedDate : '请选择上船时间'}}
                 </view>
             </picker>
-            <input placeholder="请输入上船地点" value="{{selectedLocation}}" bindinput="handleLocationChange" class="input" />
+            <input placeholder="请输入上船地点" type="text" value="{{selectedLocation}}" bindinput="handleLocationChange" class="input" />
         </view>
     </view>
 
@@ -48,7 +48,7 @@
                     {{selectedSalary ? selectedSalary : '请选择天/月'}}
                 </view>
             </picker>
-            <input placeholder="请输入具体金额" value="{{selectedMoney}}" bindinput="handleMoneyChange" class="input" />
+            <input type="number" placeholder="请输入具体金额" value="{{selectedMoney}}" bindinput="handleMoneyChange" class="input" />
         </view>
     </view>
 
@@ -56,14 +56,15 @@
     <view class="section">
         <text class="label">手机号</text>
         <view class="picker-group">
-            <input placeholder="请输入手机号" value="{{mobilePhone}}" bindinput="handlemobilePhoneChange" class="input" />
+            <input type="number" placeholder="请输入手机号" value="{{mobilePhone}}" bindinput="handlemobilePhoneChange" class="input" />
         </view>
     </view>
 
     <!-- 岗位描述 -->
     <view class="section">
         <text class="label">岗位描述</text>
-        <textarea placeholder="请输入岗位描述" value="{{jobDescription}}" bindinput="handleJobDescriptionInput" auto-height class="textarea" />
+        <textarea placeholder="请输入岗位描述" value="{{jobDescription}}" bindinput="handleJobDescriptionInput" auto-height class="textarea" maxlength="50" />
+        <view>已输入 {{charCount}}/50 字</view>
     </view>
 
     <!-- 保存提交按钮 -->
