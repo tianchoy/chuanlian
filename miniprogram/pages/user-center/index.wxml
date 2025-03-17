@@ -12,7 +12,7 @@
                 <image class="avatar" src="{{userInfo.userAvatar}}"></image>
             </block>
             <block wx:if="{{ !userInfo.nickName }}">
-                <input class="username" bindinput="onInputNickname" type="nickname" name="nickname" placeholder="请输入昵称" />
+                <input class="username" bindinput="onInputNickname" type="nickname" name="nickname" placeholder="请输入昵称" maxlength="5" />
             </block>
             <block wx:else>
                 <view class="username">{{ userInfo.nickName }}</view>

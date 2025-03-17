@@ -16,7 +16,7 @@ exports.main = async (event, context) => {
         jobDescription, //职位描述
         mobilePhone, // 电话号码
         selectedDate, //登船日期
-        jobStatus = '0' // 招聘状态为0“审核中”，1“未过审”，2“已审核”，3“已下线”，默认状态为“0审核中”
+        jobStatus = '0' // 招聘状态为0“审核中”，1“未过审”，2“已发布”，3“已下线”，默认状态为“0审核中”
     } = event
 
     try {

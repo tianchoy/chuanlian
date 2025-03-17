@@ -8,8 +8,8 @@
                         <text class="status  status-{{item.status}}">{{status[item.status]}}</text>
                     </view>
                     <view class="tools">
-                        <text class="upState">上线</text>
-                        <text class="downState">下线</text>
+                        <text class="upState" bind:tap="changeJobStatus" data-type="up" data-id="{{item.id}}">上线</text>
+                        <text class="downState"  bind:tap="changeJobStatus" data-type="down" data-id="{{item.id}}">下线</text>
                     </view>
                 </view>
                 <view class="item">

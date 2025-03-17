@@ -1,6 +1,5 @@
 {
   "pages": [
-    
     "pages/recruiter/recruiter",
     "pages/jobseeker/jobseeker",
     "pages/user-center/index",

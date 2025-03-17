@@ -16,7 +16,7 @@ Page({
         wx.cloud.callFunction({
             name: 'postJobLists',
             success: res => {
-                console.log(res.result.jobLists)
+                // console.log(res.result.jobLists)
                 this.setData({
                     jobLists: res.result.jobLists
                 })
@@ -59,6 +59,12 @@ Page({
         }
     },
 
+    //修改上下线状态
+    changeJobStatus(e){
+        const {type,id} = e.currentTarget.dataset
+        console.log(type,id)
+        
+    },
     onShow: function () {
         // 页面显示时执行
         this.getJobsList()

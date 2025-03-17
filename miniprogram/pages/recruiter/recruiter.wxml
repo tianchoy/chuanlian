@@ -2,7 +2,7 @@
 <view class="container">
     <!-- 如果 jobLists 为空，显示“暂无更多数据” -->
     <view wx:if="{{jobLists.length === 0}}" class="empty-container">
-        <text class="empty-text">暂无更多数据</text>
+        <view class="empty-text">暂无更多数据</view>
     </view>
 
     <!-- 如果 jobLists 不为空，展示数据 -->
