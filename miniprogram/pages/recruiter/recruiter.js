@@ -34,7 +34,7 @@ Page({
     },
 
     //请求数据渲染列表
-    getJobs(){
+    getJobs() {
         wx.cloud.callFunction({
             name: 'getJobs',
             success: res => {
@@ -45,17 +45,17 @@ Page({
                 })
             },
             fail: err => {
-                console.error('获取失败',err)
+                console.error('获取失败', err)
             }
         })
     },
 
     //跳转至详情页面 
-    toDetail(e){
+    toDetail(e) {
         const id = e.target.dataset.id
         console.log(id)
         wx.navigateTo({
-          url: '/pages/jobDetail/jobDetail?id='+id,
+            url: '/pages/jobDetail/jobDetail?id=' + id,
         })
     },
 
@@ -105,6 +105,13 @@ Page({
         });
     },
 
+    onTabItemTap(item) {
+        console.log('TabBar 被点击了', item);
+        if (item.index === 0) {
+            this.getJobs()
+        }
+    },
+
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
@@ -117,11 +124,12 @@ Page({
      */
     onShow() {
         // 页面显示时执行
-        console.log('onShow 加载状态:', this.data.isLoading);
+        console.log('找船模块，onShow 加载状态:', this.data.isLoading);
         if (!this.data.isLogin && !this.data.isLoading) {
-            console.log('用户未登录，重新获取用户ID');
+            console.log('找船模块，用户未登录，重新获取用户ID');
             this.getUserId();
         }
+
     },
 
     /**

@@ -6,7 +6,7 @@
     </view>
 
     <!-- 如果 jobLists 不为空，展示数据 -->
-    <view wx:else>
+    <view class="jobList-content" wx:else>
         <!-- 顶部选项卡 -->
         <scroll-view scroll-x="true" class="tabs" scroll-with-animation scroll-left="{{scrollLeft}}">
             <view wx:for="{{tabs}}" wx:key="index" class="tab {{currentTab === index ? 'active' : ''}}" bindtap="switchTab" data-index="{{index}}">

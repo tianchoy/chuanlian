@@ -49,11 +49,10 @@ Page({
         console.log('加载状态:', this.data.isLoading);
     },
     //获取求职信息列表
-    getResumesList(){
+    getResumesList() {
         wx.cloud.callFunction({
             name: 'getResumes',
             success: res => {
-                console.log(res.result.tabs)
                 console.log(res.result.resumesLists)
                 this.setData({
                     tabs: res.result.tabs,
@@ -61,7 +60,7 @@ Page({
                 })
             },
             fail: err => {
-                console.error('获取失败',err)
+                console.error('获取失败', err)
             }
         })
     },
@@ -91,6 +90,13 @@ Page({
             scrollLeft: scrollLeft
         });
     },
+
+    onTabItemTap(item) {
+        console.log('TabBar 被点击了', item);
+        if (item.index === 1) {
+            this.getResumesList()
+        }
+    },
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
@@ -103,11 +109,12 @@ Page({
      */
     onShow() {
         // 页面显示时执行
-        console.log('onShow 加载状态:', this.data.isLoading);
+        console.log('找人模块，onShow 加载状态:', this.data.isLoading);
         if (!this.data.isLogin && !this.data.isLoading) {
-            console.log('用户未登录，重新获取用户ID');
+            console.log('找人模块，用户未登录，重新获取用户ID');
             this.getUserId();
         }
+
     },
 
     /**

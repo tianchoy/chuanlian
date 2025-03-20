@@ -30,6 +30,12 @@ Page({
      */
     onLoad(options) {
         this.getOpenid()
+        console.log(options)
+        const id = options.id
+        const openid = this.data.openid
+        if (openid,id) {
+            this.getResumesInfo(openid,id)
+        }
     },
     getOpenid() {
         this.setData({ isLoading: true }); // 开始加载
@@ -42,6 +48,31 @@ Page({
             isLogin: !!userid, // 更新登录状态
             isLoading: false, // 结束加载
         })
+    },
+    //编辑功能，根据职位的id获取职位详情
+    getResumesInfo(openid,id) {
+        let that = this
+        const db = wx.cloud.database()
+        db.collection('resumes').where({openid,_id:id}).get({
+            success: function (res) {
+                console.log('查询成功', res.data[0]);
+                // 在这里处理返回的数据
+                that.setData({
+                    selectedCertificate:res.data[0].selectedCertificate,
+                    selectedRank:res.data[0].selectedRank,
+                    age:res.data[0].age,
+                    selectedGender:res.data[0].selectedGender,
+                    location:res.data[0].location,
+                    selectedSalary:res.data[0].selectedSalary,
+                    amount:res.data[0].amount,
+                    mobilePhone:res.data[0].mobilePhone,
+                    skill:res.data[0].skill
+                })
+            },
+            fail: function (err) {
+                console.error('查询失败', err);
+            }
+        });
     },
     //设置个人证书类别
     bindCertificateChange: function (e) {

@@ -21,7 +21,9 @@
     color: #999;
     font-size: 14px;
 }
-  
+  .jobList-content{
+      width: 100%;
+  }
   /* 顶部选项卡样式 */
   .tabs {
     white-space: nowrap; /* 禁止换行 */

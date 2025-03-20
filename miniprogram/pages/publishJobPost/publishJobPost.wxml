@@ -48,7 +48,7 @@
                     {{selectedSalary ? selectedSalary : '请选择天/月'}}
                 </view>
             </picker>
-            <input type="number" placeholder="请输入具体金额" value="{{selectedMoney}}" bindinput="handleMoneyChange" class="input" />
+            <input type="number" placeholder="请输入具体金额" value="{{totalSalary}}" bindinput="handleMoneyChange" class="input" />
         </view>
     </view>
 

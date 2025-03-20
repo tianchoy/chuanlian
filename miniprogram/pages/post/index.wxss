@@ -2,11 +2,22 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
+    background-color: #fff;
+}
+.empty-status{
+    height: 100%;
+    color: #bbb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.list-content{
     background-color: #fff;
 }
 .list-box{
     width: 100%;
+    margin-bottom: 150rpx;
 }
 .list-item{
     padding: 20rpx;
@@ -31,18 +42,25 @@
     border-radius: 8rpx;
 }
 .upState{
-    background-color: #09BB07;
+    background-color: #179B16;
     color: #fff;
 }
 .downState{
     background-color: #F76260;
     color: #fff;
 }
+.bt-del{
+    background-color: #EC8B89;
+    color: #fff;
+}
+.edit-status{
+    background-color: #1AAD19;
+    color: #fff;
+}
 
 .status{
     font-size: 20rpx;
     padding:5rpx 10rpx;
-    background-color: green;
     color: #fff;
     border-radius: 10rpx;
     margin-left: 10rpx;
@@ -78,7 +96,9 @@
 
 .button-container {
     position: fixed;
-    bottom: 50rpx;
+    bottom: 0;
+    padding: 35rpx 0;
+    background-color: #fff;
     display: flex;
     justify-content: space-between;
     width: 100%;

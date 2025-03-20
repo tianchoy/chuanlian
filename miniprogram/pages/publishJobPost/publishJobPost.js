@@ -32,7 +32,8 @@ Page({
         mobilePhone: '',
         openid: '',
         charCount: 0,
-        maxLength: 50
+        maxLength: 50,
+        id:''
     },
 
     /**
@@ -40,6 +41,15 @@ Page({
      */
     onLoad(options) {
         this.getOpenid()
+        console.log(options)
+        const id = options.id
+        const openid = this.data.openid
+        this.setData({
+            id
+        })
+        if (openid,id) {
+            this.getJobInfo(openid,id)
+        }
     },
     //获取openid
     getOpenid() {
@@ -54,6 +64,34 @@ Page({
             isLoading: false, // 结束加载
         })
     },
+
+    //编辑功能，根据职位的id获取职位详情
+    getJobInfo(openid,id) {
+        let that = this
+        const db = wx.cloud.database()
+        db.collection('jobs').where({openid,_id:id}).get({
+            success: function (res) {
+                console.log('查询成功', res.data[0]);
+                // 在这里处理返回的数据
+                that.setData({
+                    selectedJobCategory:res.data[0].selectedJobCategory,
+                    selectedJobType:res.data[0].selectedJobType,
+                    routeFrom:res.data[0].routeFrom,
+                    routeTo:res.data[0].routeTo,
+                    selectedDate:res.data[0].selectedDate,
+                    selectedLocation:res.data[0].selectedLocation,
+                    selectedSalary:res.data[0].selectedSalary,
+                    totalSalary:res.data[0].totalSalary,
+                    mobilePhone:res.data[0].mobilePhone,
+                    jobDescription:res.data[0].jobDescription
+                })
+            },
+            fail: function (err) {
+                console.error('查询失败', err);
+            }
+        });
+    },
+
     // 处理类别选择
     handleJobCategoryChange(e) {
         const index = e.detail.value;
@@ -131,75 +169,83 @@ Page({
     // 处理提交
     handleSubmit() {
         const {
-            selectedJobCategory,
-            selectedJobType,
-            routeFrom,
-            routeTo,
-            selectedDate,
-            selectedLocation,
-            selectedSalary,
-            totalSalary,
-            jobDescription,
-            mobilePhone,
-            openid
+          id, // 数据的唯一标识，如果存在则更新，否则新增
+          selectedJobCategory,
+          selectedJobType,
+          routeFrom,
+          routeTo,
+          selectedDate,
+          selectedLocation,
+          selectedSalary,
+          totalSalary,
+          jobDescription,
+          mobilePhone,
+          openid,
         } = this.data;
-
-        if (!selectedJobCategory || !selectedJobType || !routeFrom || !routeTo || !selectedDate || !selectedLocation || !totalSalary || !jobDescription || !mobilePhone || !selectedSalary) {
-            wx.showToast({
-                title: '请填写完整信息',
-                icon: 'none',
-            });
-            return;
+      
+        // 检查必填字段
+        if (
+          !selectedJobCategory ||
+          !selectedJobType ||
+          !routeFrom ||
+          !routeTo ||
+          !selectedDate ||
+          !selectedLocation ||
+          !totalSalary ||
+          !jobDescription ||
+          !mobilePhone ||
+          !selectedSalary
+        ) {
+          wx.showToast({
+            title: '请填写完整信息',
+            icon: 'none',
+          });
+          return;
         }
-        console.log('提交数据：', {
-            selectedJobCategory,
-            selectedJobType,
-            routeFrom,
-            routeTo,
-            selectedDate,
-            selectedLocation,
-            totalSalary,
-            jobDescription,
-            mobilePhone,
-            selectedSalary,
-            openid
-        });
+      
         // 提交逻辑
         wx.cloud.callFunction({
-            name: 'addJob',
-            data: {
-                "jobDescription": jobDescription,
-                "openid": this.data.openid,
-                "selectedJobCategory": selectedJobCategory,
-                "selectedJobType": selectedJobType,
-                "routeFrom": routeFrom,
-                "routeTo": routeTo,
-                "selectedDate": selectedDate,
-                "selectedLocation": selectedLocation,
-                "mobilePhone": mobilePhone,
-                "selectedSalary": selectedSalary,
-                "totalSalary": totalSalary
-            },
-            success: res => {
-                wx.showToast({
-                    title: '发布成功，请等审核',
-                    icon: 'success',
-                });
-                console.log('发布成功', res)
-                wx.navigateBack()
-            },
-            fail: err => {
-                wx.showToast({
-                    title: '发布失败，请修改',
-                    icon: 'success',
-                });
-                console.error('发布失败', err)
+          name: 'addJob', // 云函数名称
+          data: {
+            id, // 传递 id，如果存在则更新，否则新增
+            openid,
+            selectedJobCategory,
+            selectedJobType,
+            routeFrom,
+            routeTo,
+            selectedDate,
+            selectedLocation,
+            selectedSalary,
+            totalSalary,
+            jobDescription,
+            mobilePhone,
+          },
+          success: res => {
+            console.log('云函数返回:', res);
+            if (res.result.code === 1) {
+              wx.showToast({
+                title: id ? '更新成功' : '发布成功',
+                icon: 'success',
+              });
+              setTimeout(() => {
+                wx.navigateBack();
+              }, 1500);
+            } else {
+              wx.showToast({
+                title: id ? '更新失败' : '发布失败',
+                icon: 'none',
+              });
             }
-        })
-
-
-
-    },
+          },
+          fail: err => {
+            console.error('操作失败', err);
+            wx.showToast({
+              title: '操作失败，请重试',
+              icon: 'none',
+            });
+          },
+        });
+      },
     /**
      * 生命周期函数--监听页面初次渲染完成
      */

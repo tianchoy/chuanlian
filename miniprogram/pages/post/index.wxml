@@ -1,15 +1,18 @@
 <view class="container">
-    <view class="list-box">
+    <view class="empty-status" wx:if="{{!openid}}">请登陆后查看</view>
+    <view wx:else class="list-box">
         <view class="list-item" wx:for="{{jobLists[0]}}" wx:key="index">
-            <view wx:for="{{item}}" wx:key="title">
+            <view wx:for="{{item}}" wx:key="index">
                 <view class="title-box">
                     <view class="title">
                         {{item.title}}
                         <text class="status  status-{{item.status}}">{{status[item.status]}}</text>
                     </view>
                     <view class="tools">
-                        <text class="upState" bind:tap="changeJobStatus" data-type="up" data-id="{{item.id}}">上线</text>
-                        <text class="downState"  bind:tap="changeJobStatus" data-type="down" data-id="{{item.id}}">下线</text>
+                        <text class="upState" wx:if="{{item.status === '3'}}" bind:tap="changeJobStatus" data-type="up" data-id="{{item.id}}">上线</text>
+                        <text class="downState" wx:if="{{item.status === '2'}}"  bind:tap="changeJobStatus" data-type="down" data-id="{{item.id}}">下线</text>
+                        <text class="edit-status" wx:if="{{item.status === '1'}}" data-id="{{item.id}}" bind:tap="editStatus" data-type="job">编辑</text>
+                        <text class="bt-del" data-id="{{item.id}}" data-type="jobs" bind:tap="btDel">删除</text>
                     </view>
                 </view>
                 <view class="item">
@@ -19,16 +22,18 @@
                 </view>
             </view>
         </view>
-        <view class="list-item" wx:for="{{jobLists[1]}}" wx:key="index">
-            <view wx:for="{{item}}" wx:key="title">
+        <view class="list-content" wx:for="{{jobLists[1]}}" wx:key="index">
+            <view class="list-item" wx:for="{{item}}" wx:key="index">
                 <view class="title-box">
                     <view class="title">
                         {{item.title}}
                         <text class="status  status-{{item.rusumesStatus}}">{{status[item.rusumesStatus]}}</text>
                     </view>
                     <view class="tools">
-                        <text class="upState">上线</text>
-                        <text class="downState">下线</text>
+                        <text class="upState" wx:if="{{item.status === '3'}}" bind:tap="changeResumesStatus" data-type="up" data-id="{{item.id}}">上线</text>
+                        <text class="downState" wx:if="{{item.status === '2'}}"  bind:tap="changeResumesStatus" data-type="down" data-id="{{item.id}}">下线</text>
+                        <text class="edit-status" wx:if="{{item.status === '1'}}" data-id="{{item.id}}" bind:tap="editStatus" data-type="resume">编辑</text>
+                        <text class="bt-del" data-id="{{item.id}}" data-type="resumes" bind:tap="btDel">删除</text>
                     </view>
                 </view>
                 <view class="item">

@@ -20,7 +20,7 @@
     <view class="section">
         <text class="section-title">年龄/性别</text>
         <view class="picker-box">
-            <input type="number" placeholder="请输入年龄" bindinput="bindYearInput" class="input" />
+            <input type="number" value="{{age}}" placeholder="请输入年龄" bindinput="bindYearInput" class="input" />
             <picker class="picker-item" mode="selector" range="{{genders}}" bindchange="bindGenderChange">
                 <view class="picker">
                     性别：{{selectedGender}}
@@ -32,7 +32,7 @@
     <view class="section">
         <text class="section-title">常驻地点</text>
         <view class="picker-box">
-            <input placeholder="请输入常驻地点" bindinput="bindLocationInput" class="input" />
+            <input placeholder="请输入常驻地点" value="{{location}}" bindinput="bindLocationInput" class="input" />
         </view>
     </view>
 
@@ -44,7 +44,7 @@
                     待遇期望: {{selectedSalary}}
                 </view>
             </picker>
-            <input placeholder="请输入具体金额" bindinput="bindAmountInput" class="input" />
+            <input placeholder="请输入具体金额" value="{{amount}}" bindinput="bindAmountInput" class="input" />
         </view>
     </view>
 
