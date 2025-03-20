@@ -1,0 +1,44 @@
+<!--pages/resumeDetail/resumeDetail.wxml-->
+<view class="container">
+  <view class="title">人才信息</view>
+  
+  <view class="section">
+    <view class="section-title">证书岗位</view>
+    <view class="content">
+      <text> {{resumes.selectedCertificate}}</text>
+      <text>{{resumes.selectedRank}}</text>
+    </view>
+  </view>
+  
+  <view class="section">
+    <view class="section-title">年龄性别</view>
+    <view class="content">
+      <text>{{resumes.age}}岁</text>
+      <text>{{resumes.selectedGender}}</text>
+    </view>
+  </view>
+  
+  <view class="section">
+    <view class="section-title">期望待遇</view>
+    <view class="content">
+      <text>{{resumes.selectedSalary}}</text>
+      <text>{{resumes.amount}}元</text>
+    </view>
+  </view>
+  
+  <view class="section">
+    <view class="section-title">特长技能描述</view>
+    <view class="content">
+      <text>{{resumes.skill}}</text>
+    </view>
+  </view>
+  
+  <view class="section">
+    <view class="section-title">联系电话</view>
+    <view class="content">
+      <text>{{resumes.mobilePhone}}</text>
+    </view>
+  </view>
+  
+  <button bindtap="makePhoneCall">立即联系</button>
+</view>

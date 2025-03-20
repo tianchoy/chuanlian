@@ -64,6 +64,13 @@ Page({
             }
         })
     },
+    getResumeDetails(e){
+        console.log(e.currentTarget.dataset.id)
+        const id = e.currentTarget.dataset.id
+        wx.navigateTo({
+          url: '/pages/resumeDetail/resumeDetail?id='+id,
+        })
+    },
     // 切换 Tab
     switchTab(e) {
         const index = e.currentTarget.dataset.index;

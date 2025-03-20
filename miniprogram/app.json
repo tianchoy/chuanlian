@@ -9,6 +9,7 @@
     "pages/publishJobSeeking/publishJobSeeking",
     "pages/question/question",
     "pages/jobDetail/jobDetail",
+    "pages/resumeDetail/resumeDetail",
     "pages/talentDetail/talentDetail"
   ],
   "window": {

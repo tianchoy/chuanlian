@@ -17,10 +17,7 @@
         <swiper class="content" current="{{currentTab}}" duration="300" bindchange="swiperChange" style="height: {{swiperHeight}}px;">
             <swiper-item wx:for="{{jobLists}}" wx:key="index">
                 <view class="item">
-                    <!-- <block wx:for="{{jobLists[index]}}" wx:key="id">
-                        <list-item item="{{item}}" bind:tap="toDetail" data-id="{{item.id}}"></list-item>
-                    </block> -->
-                    <view class="list-item" wx:for="{{jobLists[index]}}" wx:key="id">
+                    <view class="list-item" wx:for="{{jobLists[index]}}" wx:key="id" data-id="{{item.id}}" bind:tap="getResumeDetails">
                         <view class="item-title">{{item.title}}</view>
                         <view class="item-content">
                             <text> 薪资:{{item.salary}}元 </text>

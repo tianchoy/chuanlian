@@ -9,8 +9,8 @@
                         <text class="status  status-{{item.status}}">{{status[item.status]}}</text>
                     </view>
                     <view class="tools">
-                        <text class="upState" wx:if="{{item.status === '3'}}" bind:tap="changeJobStatus" data-type="up" data-id="{{item.id}}">上线</text>
-                        <text class="downState" wx:if="{{item.status === '2'}}"  bind:tap="changeJobStatus" data-type="down" data-id="{{item.id}}">下线</text>
+                        <text class="upState" wx:if="{{item.status === '3'}}"  data-type="job" data-action="online" bindtap="updateStatus" data-id="{{item.id}}">上线</text>
+                        <text class="downState" wx:if="{{item.status === '2'}}" data-type="job" data-action="offline" bindtap="updateStatus" data-id="{{item.id}}">下线</text>
                         <text class="edit-status" wx:if="{{item.status === '1'}}" data-id="{{item.id}}" bind:tap="editStatus" data-type="job">编辑</text>
                         <text class="bt-del" data-id="{{item.id}}" data-type="jobs" bind:tap="btDel">删除</text>
                     </view>
@@ -30,9 +30,9 @@
                         <text class="status  status-{{item.rusumesStatus}}">{{status[item.rusumesStatus]}}</text>
                     </view>
                     <view class="tools">
-                        <text class="upState" wx:if="{{item.status === '3'}}" bind:tap="changeResumesStatus" data-type="up" data-id="{{item.id}}">上线</text>
-                        <text class="downState" wx:if="{{item.status === '2'}}"  bind:tap="changeResumesStatus" data-type="down" data-id="{{item.id}}">下线</text>
-                        <text class="edit-status" wx:if="{{item.status === '1'}}" data-id="{{item.id}}" bind:tap="editStatus" data-type="resume">编辑</text>
+                        <text class="upState" wx:if="{{item.rusumesStatus === '3'}}" data-type="resume" data-action="online" bindtap="updateStatus" data-id="{{item.id}}">上线</text>
+                        <text class="downState" wx:if="{{item.rusumesStatus === '2'}}"  data-type="resume"  data-action="offline" bindtap="updateStatus" data-id="{{item.id}}">下线</text>
+                        <text class="edit-status" wx:if="{{item.rusumesStatus === '1'}}" data-id="{{item.id}}" bind:tap="editStatus" data-type="resume">编辑</text>
                         <text class="bt-del" data-id="{{item.id}}" data-type="resumes" bind:tap="btDel">删除</text>
                     </view>
                 </view>

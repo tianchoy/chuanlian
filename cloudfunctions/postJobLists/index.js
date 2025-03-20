@@ -6,12 +6,10 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV }); // 使用当前云环境
 // 数据分组和格式化函数
 const groupAndFormatData = (data, groupKeyFn, formatFn) => {
     const groupedData = {};
-    data.forEach(item => {
-        const key = groupKeyFn(item);
-        if (!groupedData[key]) {
-            groupedData[key] = [];
-        }
-        groupedData[key].push(formatFn(item));
+    data.forEach((item, index) => {
+        // 在键中添加索引以确保唯一性
+        const key = `${groupKeyFn(item)}_${index}`;
+        groupedData[key] = [formatFn(item)]; // 每个键对应一个数组，数组中只有一个元素
     });
     return groupedData;
 };

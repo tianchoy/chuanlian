@@ -99,24 +99,65 @@ Page({
     },
 
     //修改上下线状态
-    changeJobStatus(e) {
-        const { type, id } = e.currentTarget.dataset
-        console.log(type, id)
-
-    },
+    async updateStatus(e) {
+        const { type, id, action } = e.currentTarget.dataset; // 获取 type、id 和 action
+        const openid = this.data.openid; // 获取 openid
+        console.log('参数:', type, id, openid, action);
+      
+        if (!type || !id || !openid || !action) {
+          wx.showToast({
+            title: '参数缺失',
+            icon: 'none',
+          });
+          return;
+        }
+      
+        try {
+          // 调用云函数更新状态
+          const res = await wx.cloud.callFunction({
+            name: 'updateStatus', // 云函数名称
+            data: {
+              type, // 数据类型（job 或 resume）
+              id, // 数据 ID
+              openid, // 用户 openid
+              action, // 操作类型（online 或 offline）
+            },
+          });
+      
+          console.log('云函数返回:', res);
+      
+          if (res.result.code === 1) {
+            wx.showToast({
+              title: '状态更新成功',
+              icon: 'success',
+            });
+            // 刷新数据
+            this.getJobsList(); // 假设有一个获取数据列表的方法
+          } else {
+            wx.showToast({
+              title: '状态更新失败',
+              icon: 'none',
+            });
+          }
+        } catch (err) {
+          console.error('状态更新失败:', err);
+          wx.showToast({
+            title: '状态更新失败，请重试',
+            icon: 'none',
+          });
+        }
+      },
     //删除发布的信息
     async btDel(e) {
         try {
             const id = e.target.dataset.id; // 获取需要删除的数据 ID
             const types = e.target.dataset.type; // 获取集合名称
             console.log('删除参数:', id, types);
-
             // 弹出确认框
             const modalRes = await wx.showModal({
                 title: '提示',
                 content: '您确定要删除这条数据吗？',
             });
-
             if (modalRes.confirm) {
                 // 调用云函数删除数据
                 const cloudRes = await wx.cloud.callFunction({
@@ -127,13 +168,11 @@ Page({
                     },
                 });
                 console.log('云函数返回:', cloudRes);
-
                 if (cloudRes.result && cloudRes.result.success) {
                     wx.showToast({
                         title: '删除成功',
                         icon: 'success',
                     });
-
                     // 刷新数据
                     this.getJobsList();
                 } else {
@@ -153,21 +192,20 @@ Page({
     },
 
     //编辑功能
-    editStatus(e){
-        console.log(e.target.dataset)
-        const id = e.target.dataset.id
-        const types = e.target.dataset.type
-        if(types === 'job'){
+    editStatus(e) {
+        const { id, type } = e.target.dataset; // 解构赋值获取 id 和 type
+        const pageMap = {
+            job: '/pages/publishJobPost/publishJobPost', // 职位编辑页面
+            resume: '/pages/publishJobSeeking/publishJobSeeking', // 简历编辑页面
+        };
+
+        if (pageMap[type]) { // 检查 type 是否有效
             wx.navigateTo({
-                url: '/pages/publishJobPost/publishJobPost?id='+id,
-              })
+                url: `${pageMap[type]}?id=${id}`, // 动态生成跳转 URL
+            });
+        } else {
+            console.error('无效的类型:', type); // 处理无效 type
         }
-        if(types === 'resume'){
-            wx.navigateTo({
-                url: '/pages/publishJobSeeking/publishJobSeeking?id='+id,
-              })
-        }
-        
     },
     onShow: function () {
         console.log('发布模块，onShow 加载状态:', this.data.isLoading);
