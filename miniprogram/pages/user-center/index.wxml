@@ -45,6 +45,16 @@
                 </view>
                 <image class="arrow_icon" src="../../images/arrow.svg" />
             </view>
+
+            <view class="setting_item" wx:if="{{userInfo.isAdmin}}" bind:tap="gotoWxCodePage">
+                <view class="left">
+                    <image class="setting_icon" src="../../images/icons/share.svg" />
+                    <view class="setting_text">
+                        <button class="contact-button" open-type="share">管理中心</button>
+                    </view>
+                </view>
+                <image class="arrow_icon" src="../../images/arrow.svg" />
+            </view>
         </view>
     </view>
 </view>

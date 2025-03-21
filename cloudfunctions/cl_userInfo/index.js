@@ -20,6 +20,7 @@ exports.main = async (event, context) => {
                     nickName: '',
                     userAvatar: '',
                     openid,
+                    isAdmin:false,
                     date: new Date()
                 }
             })

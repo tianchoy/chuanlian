@@ -17,6 +17,7 @@ Page({
     },
     onLoad() {
         var that = this
+        that.showLoading()
         that.getUserInfo()
     },
     async getUserInfo() {
@@ -33,11 +34,13 @@ Page({
         that.setData({
             userInfo: res.result
         })
+        that.hideLoading()
     },
     onChooseAvatar(e) {
         let that = this
+        that.showLoading()
         const avatarUrl = e.detail.avatarUrl;
-        this.uploadAvatarToCloud(avatarUrl);
+        that.uploadAvatarToCloud(avatarUrl);
 
     },
     uploadAvatarToCloud(avatarUrl) {
@@ -47,6 +50,7 @@ Page({
             success: (res) => {
                 const fileID = res.fileID;
                 this.saveInfo('userAvatar', fileID)
+                this.hideLoading()
             },
             fail: (err) => {
                 console.log('头像上传失败:', err);
@@ -55,7 +59,8 @@ Page({
     },
     onInputNickname(e) {
         let that = this
-        this.saveInfo('nickName', e.detail.value)
+        that.showLoading()
+        that.saveInfo('nickName', e.detail.value)
     },
 
     //常见问题页面
@@ -82,6 +87,15 @@ Page({
         that.setData({
             userInfo: res.result.data[0]
         })
+        that.hideLoading()
+    },
+    showLoading(){
+        wx.showLoading({
+            title: '加载中',
+        })
+    },
+    hideLoading(){
+        wx.hideLoading()
     },
     onShareAppMessage(res) {
         return {

@@ -19,6 +19,7 @@ Page({
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
+        this.showLoading()
         // 获取屏幕宽度
         const systemInfo = wx.getSystemInfoSync();
         const windowHeight = systemInfo.windowHeight;
@@ -58,18 +59,22 @@ Page({
                     tabs: res.result.tabs,
                     jobLists: res.result.resumesLists
                 })
+                this.hideLoading()
             },
             fail: err => {
                 console.error('获取失败', err)
+                this.hideLoading()
             }
         })
     },
-    getResumeDetails(e){
+    getResumeDetails(e) {
+        this.showLoading()
         console.log(e.currentTarget.dataset.id)
         const id = e.currentTarget.dataset.id
         wx.navigateTo({
-          url: '/pages/resumeDetail/resumeDetail?id='+id,
+            url: '/pages/resumeDetail/resumeDetail?id=' + id,
         })
+        this.hideLoading()
     },
     // 切换 Tab
     switchTab(e) {
@@ -103,6 +108,14 @@ Page({
         if (item.index === 1) {
             this.getResumesList()
         }
+    },
+    showLoading() {
+        wx.showLoading({
+            title: '加载中',
+        })
+    },
+    hideLoading() {
+        wx.hideLoading()
     },
     /**
      * 生命周期函数--监听页面初次渲染完成

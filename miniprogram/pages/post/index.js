@@ -8,6 +8,7 @@ Page({
     },
 
     onLoad: function (options) {
+        this.showLoading()
         // 页面创建时执行
         this.getUserId()
         console.log('onload', !!this.data.openid)
@@ -28,12 +29,14 @@ Page({
             this.setData({
                 jobLists: res.result.jobLists, // 假设云函数返回的数据字段是 jobLists
             });
+            wx.hideLoading()
         } catch (err) {
             console.error('获取数据失败:', err);
             wx.showToast({
                 title: '获取数据失败',
                 icon: 'none',
             });
+            this.hideLoading()
         }
     },
     //获取用户id来确定用户是否是登陆了
@@ -61,6 +64,7 @@ Page({
         const types = e.target.dataset.type;
         const db = wx.cloud.database();
         const openid = this.data.openid;
+        this.showLoading()
         // 定义类型与集合、页面路径及发布上限的映射关系
         const typeConfig = {
             publishJobPost: {
@@ -86,6 +90,7 @@ Page({
             .count();
         // 检查发布上限
         if (countRes.total >= config.limit) {
+            this.hideLoading()
             wx.showToast({
                 title: '已达发布上限',
                 icon: 'error',
@@ -103,7 +108,7 @@ Page({
         const { type, id, action } = e.currentTarget.dataset; // 获取 type、id 和 action
         const openid = this.data.openid; // 获取 openid
         console.log('参数:', type, id, openid, action);
-      
+      this.showLoading()
         if (!type || !id || !openid || !action) {
           wx.showToast({
             title: '参数缺失',
@@ -123,7 +128,7 @@ Page({
               action, // 操作类型（online 或 offline）
             },
           });
-      
+          this.hideLoading()
           console.log('云函数返回:', res);
       
           if (res.result.code === 1) {
@@ -149,6 +154,7 @@ Page({
       },
     //删除发布的信息
     async btDel(e) {
+        this.showLoading()
         try {
             const id = e.target.dataset.id; // 获取需要删除的数据 ID
             const types = e.target.dataset.type; // 获取集合名称
@@ -168,6 +174,7 @@ Page({
                     },
                 });
                 console.log('云函数返回:', cloudRes);
+                this.hideLoading()
                 if (cloudRes.result && cloudRes.result.success) {
                     wx.showToast({
                         title: '删除成功',
@@ -184,6 +191,7 @@ Page({
             }
         } catch (error) {
             console.error('删除失败:', error);
+            this.hideLoading()
             wx.showToast({
                 title: '删除失败，请重试',
                 icon: 'none',
@@ -193,6 +201,7 @@ Page({
 
     //编辑功能
     editStatus(e) {
+        this.showLoading()
         const { id, type } = e.target.dataset; // 解构赋值获取 id 和 type
         const pageMap = {
             job: '/pages/publishJobPost/publishJobPost', // 职位编辑页面
@@ -200,12 +209,21 @@ Page({
         };
 
         if (pageMap[type]) { // 检查 type 是否有效
+            this.hideLoading()
             wx.navigateTo({
                 url: `${pageMap[type]}?id=${id}`, // 动态生成跳转 URL
             });
         } else {
             console.error('无效的类型:', type); // 处理无效 type
         }
+    },
+    showLoading(){
+        wx.showLoading({
+            title: '加载中',
+        })
+    },
+    hideLoading(){
+        wx.hideLoading()
     },
     onShow: function () {
         console.log('发布模块，onShow 加载状态:', this.data.isLoading);

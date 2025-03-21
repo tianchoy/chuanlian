@@ -20,6 +20,7 @@ Page({
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
+        this.showLoading()
         // 获取屏幕宽度
         const systemInfo = wx.getSystemInfoSync();
         const windowHeight = systemInfo.windowHeight;
@@ -43,6 +44,7 @@ Page({
                     tabs: res.result.tabs,
                     jobLists: res.result.jobLists
                 })
+                this.hideLoading()
             },
             fail: err => {
                 console.error('获取失败', err)
@@ -52,8 +54,10 @@ Page({
 
     //跳转至详情页面 
     toDetail(e) {
+        this.showLoading()
         const id = e.target.dataset.id
         console.log(id)
+        this.hideLoading()
         wx.navigateTo({
             url: '/pages/jobDetail/jobDetail?id=' + id,
         })
@@ -110,6 +114,15 @@ Page({
         if (item.index === 0) {
             this.getJobs()
         }
+    },
+
+    showLoading(){
+        wx.showLoading({
+            title: '加载中',
+        })
+    },
+    hideLoading(){
+        wx.hideLoading()
     },
 
     /**

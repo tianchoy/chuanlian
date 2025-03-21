@@ -63,5 +63,5 @@
         </view>
     </view>
 
-    <button bindtap="submitForm">保存提交</button>
+    <button bindtap="submitForm"  disabled="{{isSubmitting}}">保存提交</button>
 </view>

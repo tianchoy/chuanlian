@@ -1,4 +1,3 @@
-// pages/publishJobPost/publishJobPost.js
 Page({
 
     /**
@@ -7,6 +6,7 @@ Page({
     data: {
         isLogin: false,
         isLoading: false,
+        isSubmitting: false, // 新增字段，用于控制提交按钮的禁用状态
         jobCategories: [
             { cate_id: 1, cate_name: '一类' },
             { cate_id: 2, cate_name: '二类' },
@@ -33,7 +33,7 @@ Page({
         openid: '',
         charCount: 0,
         maxLength: 50,
-        id:''
+        id: ''
     },
 
     /**
@@ -47,8 +47,8 @@ Page({
         this.setData({
             id
         })
-        if (openid,id) {
-            this.getJobInfo(openid,id)
+        if (openid, id) {
+            this.getJobInfo(openid, id)
         }
     },
     //获取openid
@@ -66,24 +66,24 @@ Page({
     },
 
     //编辑功能，根据职位的id获取职位详情
-    getJobInfo(openid,id) {
+    getJobInfo(openid, id) {
         let that = this
         const db = wx.cloud.database()
-        db.collection('jobs').where({openid,_id:id}).get({
+        db.collection('jobs').where({ openid, _id: id }).get({
             success: function (res) {
                 console.log('查询成功', res.data[0]);
                 // 在这里处理返回的数据
                 that.setData({
-                    selectedJobCategory:res.data[0].selectedJobCategory,
-                    selectedJobType:res.data[0].selectedJobType,
-                    routeFrom:res.data[0].routeFrom,
-                    routeTo:res.data[0].routeTo,
-                    selectedDate:res.data[0].selectedDate,
-                    selectedLocation:res.data[0].selectedLocation,
-                    selectedSalary:res.data[0].selectedSalary,
-                    totalSalary:res.data[0].totalSalary,
-                    mobilePhone:res.data[0].mobilePhone,
-                    jobDescription:res.data[0].jobDescription
+                    selectedJobCategory: res.data[0].selectedJobCategory,
+                    selectedJobType: res.data[0].selectedJobType,
+                    routeFrom: res.data[0].routeFrom,
+                    routeTo: res.data[0].routeTo,
+                    selectedDate: res.data[0].selectedDate,
+                    selectedLocation: res.data[0].selectedLocation,
+                    selectedSalary: res.data[0].selectedSalary,
+                    totalSalary: res.data[0].totalSalary,
+                    mobilePhone: res.data[0].mobilePhone,
+                    jobDescription: res.data[0].jobDescription
                 })
             },
             fail: function (err) {
@@ -168,47 +168,14 @@ Page({
 
     // 处理提交
     handleSubmit() {
-        const {
-          id, // 数据的唯一标识，如果存在则更新，否则新增
-          selectedJobCategory,
-          selectedJobType,
-          routeFrom,
-          routeTo,
-          selectedDate,
-          selectedLocation,
-          selectedSalary,
-          totalSalary,
-          jobDescription,
-          mobilePhone,
-          openid,
-        } = this.data;
-      
-        // 检查必填字段
-        if (
-          !selectedJobCategory ||
-          !selectedJobType ||
-          !routeFrom ||
-          !routeTo ||
-          !selectedDate ||
-          !selectedLocation ||
-          !totalSalary ||
-          !jobDescription ||
-          !mobilePhone ||
-          !selectedSalary
-        ) {
-          wx.showToast({
-            title: '请填写完整信息',
-            icon: 'none',
-          });
-          return;
+        if (this.data.isSubmitting) {
+            return; // 如果正在提交中，直接返回，防止重复提交
         }
-      
-        // 提交逻辑
-        wx.cloud.callFunction({
-          name: 'addJob', // 云函数名称
-          data: {
-            id, // 传递 id，如果存在则更新，否则新增
-            openid,
+
+        this.setData({ isSubmitting: true }); // 开始提交，锁定按钮
+
+        const {
+            id, // 数据的唯一标识，如果存在则更新，否则新增
             selectedJobCategory,
             selectedJobType,
             routeFrom,
@@ -219,33 +186,75 @@ Page({
             totalSalary,
             jobDescription,
             mobilePhone,
-          },
-          success: res => {
-            console.log('云函数返回:', res);
-            if (res.result.code === 1) {
-              wx.showToast({
-                title: id ? '更新成功' : '发布成功',
-                icon: 'success',
-              });
-              setTimeout(() => {
-                wx.navigateBack();
-              }, 1500);
-            } else {
-              wx.showToast({
-                title: id ? '更新失败' : '发布失败',
-                icon: 'none',
-              });
-            }
-          },
-          fail: err => {
-            console.error('操作失败', err);
+            openid,
+        } = this.data;
+
+        // 检查必填字段
+        if (
+            !selectedJobCategory ||
+            !selectedJobType ||
+            !routeFrom ||
+            !routeTo ||
+            !selectedDate ||
+            !selectedLocation ||
+            !totalSalary ||
+            !jobDescription ||
+            !mobilePhone ||
+            !selectedSalary
+        ) {
             wx.showToast({
-              title: '操作失败，请重试',
-              icon: 'none',
+                title: '请填写完整信息',
+                icon: 'none',
             });
-          },
+            this.setData({ isSubmitting: false }); // 提交失败，解锁按钮
+            return;
+        }
+
+        // 提交逻辑
+        wx.cloud.callFunction({
+            name: 'addJob', // 云函数名称
+            data: {
+                id, // 传递 id，如果存在则更新，否则新增
+                openid,
+                selectedJobCategory,
+                selectedJobType,
+                routeFrom,
+                routeTo,
+                selectedDate,
+                selectedLocation,
+                selectedSalary,
+                totalSalary,
+                jobDescription,
+                mobilePhone,
+            },
+            success: res => {
+                console.log('云函数返回:', res);
+                if (res.result.code === 1) {
+                    wx.showToast({
+                        title: id ? '更新成功' : '发布成功',
+                        icon: 'success',
+                    });
+                    setTimeout(() => {
+                        wx.navigateBack();
+                    }, 1500);
+                } else {
+                    wx.showToast({
+                        title: id ? '更新失败' : '发布失败',
+                        icon: 'none',
+                    });
+                }
+                this.setData({ isSubmitting: false }); // 提交完成，解锁按钮
+            },
+            fail: err => {
+                console.error('操作失败', err);
+                wx.showToast({
+                    title: '操作失败，请重试',
+                    icon: 'none',
+                });
+                this.setData({ isSubmitting: false }); // 提交失败，解锁按钮
+            },
         });
-      },
+    },
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
