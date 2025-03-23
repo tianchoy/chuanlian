@@ -7,19 +7,14 @@ Page({
         isLogin: false,
         isLoading: false,
         isSubmitting: false, // 新增字段，用于控制提交按钮的禁用状态
-        jobCategories: [
-            { cate_id: 1, cate_name: '一类' },
-            { cate_id: 2, cate_name: '二类' },
-            { cate_id: 3, cate_name: '三类' },
+        categories: [
+            { name: '一类', items: ['船长', '轮机长', '大副', '大管轮', '二副', '三副', '三管轮'] },
+            { name: '二类', items: ['船长', '驾驶员', '轮机长', '轮机员'] },
+            { name: '三类', items: ['船长', '驾驶员', '轮机长', '轮机员'] },
+            { name: '水手', items: ['水手'] }
         ],
+        subCategories: '',
         selectedJobCategory: '', // 选中的类别
-        jobTypes: [
-            { job_id: 1, job_name: '机长' },
-            { job_id: 2, job_name: '船员' },
-            { job_id: 3, job_name: '船长' },
-            { job_id: 4, job_name: '水手' },
-            { job_id: 5, job_name: '厨师' },
-        ],
         selectedJobType: '', // 选中的岗位
         routeFrom: '', // 航线起点
         routeTo: '', // 航线终点
@@ -94,16 +89,34 @@ Page({
 
     // 处理类别选择
     handleJobCategoryChange(e) {
-        const index = e.detail.value;
-        const selectedJobCategory = this.data.jobCategories[index].cate_name;
-        this.setData({ selectedJobCategory });
+        const index = e.detail.value; // 获取用户选择的分类索引
+        const selectedCategory = this.data.categories[index].name; // 获取选择的分类名称
+        const subCategories = this.data.categories[index].items.map(item => ({ name: item })); // 获取子项列表
+    
+        // 如果选择的分类是 "水手"，直接设置 selectedJobType 为 "水手"
+        if (selectedCategory === '水手') {
+            this.setData({
+                selectedJobType: '水手',
+                selectedJobCategory: selectedCategory,
+                subCategories: [], // 清空子项列表，因为 "水手" 没有子项
+            });
+        } else {
+            // 否则，更新选择的分类和子项列表，并清空 selectedJobType
+            this.setData({
+                selectedJobCategory: selectedCategory,
+                subCategories: subCategories,
+                selectedJobType: '' // 清空 selectedJobType
+            });
+        }
     },
 
     // 处理岗位选择
     handleJobTypeChange(e) {
         const index = e.detail.value;
-        const selectedJobType = this.data.jobTypes[index].job_name;
-        this.setData({ selectedJobType });
+        const selectedSubCategory = this.data.subCategories[index].name;
+        this.setData({
+            selectedJobType: selectedSubCategory
+        });
     },
 
     // 处理航线起点输入
@@ -168,6 +181,9 @@ Page({
 
     // 处理提交
     handleSubmit() {
+        wx.showLoading({
+          title: '提交中',
+        })
         if (this.data.isSubmitting) {
             return; // 如果正在提交中，直接返回，防止重复提交
         }
@@ -230,6 +246,7 @@ Page({
             success: res => {
                 console.log('云函数返回:', res);
                 if (res.result.code === 1) {
+                    wx.hideLoading()
                     wx.showToast({
                         title: id ? '更新成功' : '发布成功',
                         icon: 'success',
@@ -238,12 +255,13 @@ Page({
                         wx.navigateBack();
                     }, 1500);
                 } else {
+                    wx.hideLoading()
                     wx.showToast({
                         title: id ? '更新失败' : '发布失败',
                         icon: 'none',
                     });
                 }
-                this.setData({ isSubmitting: false }); // 提交完成，解锁按钮
+                // this.setData({ isSubmitting: false }); // 提交完成，解锁按钮
             },
             fail: err => {
                 console.error('操作失败', err);

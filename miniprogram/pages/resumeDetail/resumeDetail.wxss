@@ -36,7 +36,14 @@ page {
 }
 .content text{
     display: inline-block;
-    margin: 20rpx 50rpx;
+    margin: 0 50rpx;
+}
+.date{
+    width: 100%;
+    text-align: left;
+    color: #ccc;
+    margin-bottom: 10%;
+    font-size: 24rpx;
 }
 
 button {

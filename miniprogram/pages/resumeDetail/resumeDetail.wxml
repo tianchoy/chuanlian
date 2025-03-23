@@ -39,6 +39,7 @@
       <text>{{resumes.mobilePhone}}</text>
     </view>
   </view>
+  <view class="date">发布时间：{{formattedDate}}</view>
   
   <button bindtap="makePhoneCall">立即联系</button>
 </view>

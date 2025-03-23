@@ -3,15 +3,14 @@
     <view class="section">
         <text class="label">招聘岗位</text>
         <view class="picker-group">
-            <picker class="picker-box" mode="selector" range="{{jobCategories}}" range-key="cate_name" bindchange="handleJobCategoryChange">
+            <picker class="picker-box" mode="selector" range="{{categories}}"  range-key="name" bindchange="handleJobCategoryChange">
                 <view class="picker">
-                    {{selectedJobCategory ? selectedJobCategory : '请选择类别'}}
+                    {{selectedJobCategory ? selectedJobCategory : '请选择岗位'}}
                 </view>
             </picker>
-            <picker class="picker-box" mode="selector" range="{{jobTypes}}" range-key="job_name" bindchange="handleJobTypeChange">
-                <view class="picker">
-                    {{selectedJobType ? selectedJobType : '请选择岗位'}}
-                </view>
+
+            <picker mode="selector" range="{{subCategories}}"  range-key="name" bindchange="handleJobTypeChange">
+                <view class="picker">{{selectedJobType ? selectedJobType : '请选择岗位'}}</view>
             </picker>
         </view>
     </view>

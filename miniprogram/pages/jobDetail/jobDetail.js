@@ -1,11 +1,13 @@
 // pages/jobDetail/jobDetail.js
+const { formatDate } = require('../../utils/formatDate.js');
 Page({
 
     /**
      * 页面的初始数据
      */
     data: {
-        jobDetailInfo: {}
+        jobDetailInfo: {},
+        formattedDate:''
     },
 
     /**
@@ -23,8 +25,10 @@ Page({
         const db = wx.cloud.database(); // 获取云数据库实例
         db.collection('jobs').doc(jobId).get({
             success: (res) => {
+                console.log(res.data)
                 this.setData({
                     jobDetailInfo: res.data, // 将获取的数据存储到页面数据中
+                    formattedDate:formatDate(res.data.updatedAt)
                 });
             },
             fail: (err) => {

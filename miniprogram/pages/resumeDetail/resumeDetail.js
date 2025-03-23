@@ -1,11 +1,13 @@
 // pages/resumeDetail/resumeDetail.js
+const { formatDate } = require('../../utils/formatDate.js');
 Page({
 
     /**
      * 页面的初始数据
      */
     data: {
-        resumes: {}
+        resumes: {},
+        formattedDate:''
     },
 
     /**
@@ -27,6 +29,7 @@ Page({
                 console.log(res.data)
                 this.setData({
                     resumes: res.data, // 将获取的数据存储到页面数据中
+                    formattedDate:formatDate(res.data.updatedAt)
                 });
             },
             fail: (err) => {

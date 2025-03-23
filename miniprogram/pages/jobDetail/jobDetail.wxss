@@ -35,6 +35,13 @@ page {
     display: flex;
     justify-content: space-between;
 }
+.date{
+    width: 100%;
+    text-align: left;
+    color: #ccc;
+    margin-bottom: 10%;
+    font-size: 24rpx;
+}
 
 button {
     margin-top: 20px;
