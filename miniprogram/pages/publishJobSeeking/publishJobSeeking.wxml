@@ -4,12 +4,13 @@
     <view class="section">
         <text class="section-title">证书岗位</text>
         <view class="picker-box">
-            <picker class="picker-item" mode="selector" range="{{certificatePositions}}" bindchange="bindCertificateChange">
+            <picker class="picker-item" mode="selector" range="{{certificatePositions}}" bindchange="bindCertificateChange"  range-key="name">
                 <view class="picker">
                     选择证书类别：{{selectedCertificate}}
                 </view>
             </picker>
-            <picker class="picker-item" mode="selector" range="{{ranks}}" bindchange="bindRankChange">
+
+            <picker class="picker-item" mode="selector" range="{{ranks}}" bindchange="bindRankChange" range-key="name">
                 <view class="picker">
                     选择职业：{{selectedRank}}
                 </view>

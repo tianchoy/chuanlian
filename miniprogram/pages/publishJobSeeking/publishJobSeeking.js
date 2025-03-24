@@ -4,9 +4,14 @@ Page({
      * 页面的初始数据
      */
     data: {
-        certificatePositions: ['一类', '二类', '三类'],
+        certificatePositions: [
+            { name: '一类', items: ['船长', '轮机长', '大副', '大管轮', '二副','二管轮', '三副', '三管轮'] },
+            { name: '二类', items: ['船长', '驾驶员', '轮机长', '轮机员'] },
+            { name: '三类', items: ['船长', '驾驶员', '轮机长', '轮机员'] },
+            { name: '水手', items: ['水手'] }
+        ],
         selectedCertificate: '一类',
-        ranks: ['大副', '轮机长', '大管轮'],
+        ranks: '',
         selectedRank: '大副',
         genders: ['男', '女'],
         selectedGender: '男',
@@ -36,6 +41,7 @@ Page({
         if (openid && id) {
             this.getResumesInfo(openid, id);
         }
+        this.bindCertificateChange('')
     },
 
     // 获取 openid
@@ -80,15 +86,32 @@ Page({
 
     // 设置个人证书类别
     bindCertificateChange: function (e) {
-        this.setData({
-            selectedCertificate: this.data.certificatePositions[e.detail.value],
-        });
+        const index = e ? e.detail.value : 0;
+        const selectedCategory = this.data.certificatePositions[index].name; // 获取选择的分类名称
+        const subCategories = this.data.certificatePositions[index].items.map(item => ({ name: item })); // 获取子项列表
+        // 如果选择的分类是 "水手"，直接设置 selectedRank 为 "水手"
+        if (selectedCategory === '水手') {
+            this.setData({
+                selectedRank: '水手',
+                selectedCertificate: selectedCategory,
+                ranks: subCategories, // 清空子项列表，因为 "水手" 没有子项
+            });
+        } else {
+            // 否则，更新选择的分类和子项列表，并清空 selectedRank
+            this.setData({
+                selectedCertificate: selectedCategory,
+                ranks: subCategories,
+                selectedRank: '' // 清空 selectedRank
+            });
+        }
     },
 
     // 设置个人职业
     bindRankChange: function (e) {
+        const index = e.detail.value;
+        const selectedSubCategory = this.data.ranks[index].name;
         this.setData({
-            selectedRank: this.data.ranks[e.detail.value],
+            selectedRank: selectedSubCategory
         });
     },
 

@@ -54,7 +54,6 @@ Page({
         wx.cloud.callFunction({
             name: 'getResumes',
             success: res => {
-                console.log(res.result.resumesLists)
                 this.setData({
                     tabs: res.result.tabs,
                     jobLists: res.result.resumesLists

@@ -1,3 +1,4 @@
+const db = wx.cloud.database();
 Page({
     data: {
         isLogin: false,
@@ -62,7 +63,6 @@ Page({
     //跳转到发布招聘页面
     async publish(e) {
         const types = e.target.dataset.type;
-        const db = wx.cloud.database();
         const openid = this.data.openid;
         this.showLoading()
         // 定义类型与集合、页面路径及发布上限的映射关系

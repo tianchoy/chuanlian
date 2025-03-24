@@ -34,8 +34,8 @@
       {
         "pagePath": "pages/jobseeker/jobseeker",
         "text": "找人",
-        "iconPath": "images/icons/home.png",
-        "selectedIconPath": "images/icons/home-active.png"
+        "iconPath": "images/icons/findman.png",
+        "selectedIconPath": "images/icons/findman-active.png"
       },
       {
         "pagePath": "pages/post/index",

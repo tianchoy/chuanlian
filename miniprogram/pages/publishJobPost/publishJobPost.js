@@ -8,7 +8,7 @@ Page({
         isLoading: false,
         isSubmitting: false, // 新增字段，用于控制提交按钮的禁用状态
         categories: [
-            { name: '一类', items: ['船长', '轮机长', '大副', '大管轮', '二副', '三副', '三管轮'] },
+            { name: '一类', items: ['船长', '轮机长', '大副', '大管轮', '二副','二管轮', '三副', '三管轮'] },
             { name: '二类', items: ['船长', '驾驶员', '轮机长', '轮机员'] },
             { name: '三类', items: ['船长', '驾驶员', '轮机长', '轮机员'] },
             { name: '水手', items: ['水手'] }
@@ -39,12 +39,11 @@ Page({
         console.log(options)
         const id = options.id
         const openid = this.data.openid
-        this.setData({
-            id
-        })
+        this.setData({id})
         if (openid, id) {
             this.getJobInfo(openid, id)
         }
+        this.handleJobCategoryChange('');
     },
     //获取openid
     getOpenid() {
@@ -89,16 +88,15 @@ Page({
 
     // 处理类别选择
     handleJobCategoryChange(e) {
-        const index = e.detail.value; // 获取用户选择的分类索引
+        const index = e ? e.detail.value : 0;
         const selectedCategory = this.data.categories[index].name; // 获取选择的分类名称
         const subCategories = this.data.categories[index].items.map(item => ({ name: item })); // 获取子项列表
-    
         // 如果选择的分类是 "水手"，直接设置 selectedJobType 为 "水手"
         if (selectedCategory === '水手') {
             this.setData({
                 selectedJobType: '水手',
                 selectedJobCategory: selectedCategory,
-                subCategories: [], // 清空子项列表，因为 "水手" 没有子项
+                subCategories: subCategories, // 清空子项列表，因为 "水手" 没有子项
             });
         } else {
             // 否则，更新选择的分类和子项列表，并清空 selectedJobType
@@ -182,7 +180,7 @@ Page({
     // 处理提交
     handleSubmit() {
         wx.showLoading({
-          title: '提交中',
+          title: '发布中',
         })
         if (this.data.isSubmitting) {
             return; // 如果正在提交中，直接返回，防止重复提交
