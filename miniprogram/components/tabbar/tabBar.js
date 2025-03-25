@@ -23,7 +23,7 @@ Component({
         },
         {
           pagePath: "/pages/user-center/index",
-          text: "我的",
+          text: "返回",
           iconPath: "../../images/icons/usercenter.png",
           selectedIconPath: "../../images/icons/usercenter-active.png"
         }
@@ -34,8 +34,6 @@ Component({
       switchTab(e) {
         const { path, index } = e.currentTarget.dataset
         const ins = this.data.activeIndex
-        
-        console.log(path,index,ins)
         if (index === ins) return
         
         wx.reLaunch({

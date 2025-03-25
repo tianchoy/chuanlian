@@ -69,6 +69,12 @@ Page({
           url: '/pages/question/question',
         })
     },
+    gotoAdmin(){
+        console.log('去管理中心')
+        wx.redirectTo({
+          url: '/pages/admin/jobIndex/jobIndex',
+        })
+    },
 
     //保存用户名和头像
     async saveInfo(types, values) {

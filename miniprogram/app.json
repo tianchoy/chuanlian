@@ -1,6 +1,6 @@
 {
   "pages": [
-    "pages/admin/jobIndex/jobIndex",
+    
     "pages/recruiter/recruiter",
     "pages/jobseeker/jobseeker",
     "pages/user-center/index",
@@ -10,7 +10,7 @@
     "pages/question/question",
     "pages/jobDetail/jobDetail",
     "pages/resumeDetail/resumeDetail",
-    
+    "pages/admin/jobIndex/jobIndex",
     "pages/admin/resumeIndex/resumeIndex",
     "pages/admin/jobDetail/jobDetail",
     "pages/admin/resumeDetail/resumeDetail"

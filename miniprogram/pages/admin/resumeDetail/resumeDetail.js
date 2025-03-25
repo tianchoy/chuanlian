@@ -88,7 +88,10 @@ Page({
      * 生命周期函数--监听页面显示
      */
     onShow() {
-
+        const resumeId = this.data.id
+        if (resumeId) {
+            this.getResumeDetails(resumeId); // 调用方法获取数据
+        }
     },
 
     /**

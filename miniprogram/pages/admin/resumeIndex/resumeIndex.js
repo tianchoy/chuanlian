@@ -19,6 +19,9 @@ Page({
     getResumesList() {
         wx.cloud.callFunction({
             name: 'getResumes',
+            data:{
+                types:'0'
+            },
             success: res => {
                 console.log(res.result.resumesLists)
                 this.setData({
