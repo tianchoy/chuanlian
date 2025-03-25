@@ -5,7 +5,7 @@
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 120rpx;
+    height: 170rpx;
     background: #fff;
     box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 }

@@ -19,7 +19,7 @@
 }
 .list-box{
     width: 100%;
-    margin-bottom: 150rpx;
+    margin-bottom: 170rpx;
 }
 .list-item{
     padding: 20rpx;
