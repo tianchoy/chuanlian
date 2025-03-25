@@ -1,45 +1,45 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
-cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV }) // 使用当前云环境
+cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
-// 云函数入口函数
 exports.main = async (event, context) => {
     const db = cloud.database()
     const res = await db.collection('jobs').orderBy('updatedAt', 'desc').get()
-    // 过滤出 jobStatus 为 2 的数据
-    const filteredData = res.data.filter(item => item.jobStatus === '2')
+    const { types } = event
+    
+    // 1. 过滤出符合条件的职位
+    const filteredData = res.data.filter(item => item.jobStatus === types)
+    
+    // 2. 为每个职位生成唯一分组键（包含 title 和唯一标识）
     const groupedData = {}
-
-    filteredData.forEach(item => {
-        const key = `${item.selectedJobCategory}${item.selectedJobType}`
-        if (!groupedData[key]) {
-            groupedData[key] = {
-                tag: item.jobStatus,
-                jobs: []
-            }
-        }
-
-        groupedData[key].jobs.push({
-            title: `${item.selectedJobCategory}${item.selectedJobType}`,
-            salary: `${item.selectedSalary}${item.totalSalary}`,
-            route: `${item.routeFrom}~${item.routeTo}`,
-            date: item.selectedDate,
-            selectedLocation:item.selectedLocation,
-            id: item._id
-        })
-    })
-
-    const tabs = Object.keys(groupedData).map(key => {
-        return {
-            name: key,
-            tag: groupedData[key].tag
+    
+    filteredData.forEach((item, index) => {
+        const title = `${item.selectedJobCategory}${item.selectedJobType}`
+        const uniqueKey = `${title}_${index}` // 添加索引确保唯一性
+        
+        groupedData[uniqueKey] = {
+            tag: item.jobStatus,
+            jobs: [{
+                title: title,
+                salary: `${item.selectedSalary}${item.totalSalary}`,
+                route: `${item.routeFrom}~${item.routeTo}`,
+                date: item.selectedDate,
+                selectedLocation: item.selectedLocation,
+                id: item._id
+            }]
         }
     })
-
-    const jobLists = Object.keys(groupedData).map(key => {
-        return groupedData[key].jobs
-    })
-
+    
+    // 3. 转换为前端需要的格式
+    const tabs = Object.keys(groupedData).map(key => ({
+        name: groupedData[key].jobs[0].title, // 使用职位标题
+        tag: groupedData[key].tag
+    }))
+    
+    const jobLists = Object.keys(groupedData).map(key => 
+        groupedData[key].jobs
+    )
+    
     return {
         tabs: tabs,
         jobLists: jobLists

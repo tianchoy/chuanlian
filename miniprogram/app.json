@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/admin/jobIndex/jobIndex",
     "pages/recruiter/recruiter",
     "pages/jobseeker/jobseeker",
     "pages/user-center/index",
@@ -8,7 +9,11 @@
     "pages/publishJobSeeking/publishJobSeeking",
     "pages/question/question",
     "pages/jobDetail/jobDetail",
-    "pages/resumeDetail/resumeDetail"
+    "pages/resumeDetail/resumeDetail",
+    
+    "pages/admin/resumeIndex/resumeIndex",
+    "pages/admin/jobDetail/jobDetail",
+    "pages/admin/resumeDetail/resumeDetail"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",

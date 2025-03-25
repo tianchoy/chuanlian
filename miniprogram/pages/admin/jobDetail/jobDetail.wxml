@@ -1,0 +1,47 @@
+<!--pages/jobDetail/jobDetail.wxml-->
+<view class="container">
+    <view class="title">岗位详情</view>
+
+    <view class="section">
+        <view class="section-title">招聘岗位</view>
+        <view class="content">
+            <text> {{jobDetailInfo.selectedJobCategory}}{{jobDetailInfo.selectedJobType}}</text>
+            <text>航线：{{jobDetailInfo.routeFrom}} - {{jobDetailInfo.routeTo}}</text>
+        </view>
+    </view>
+
+    <view class="section">
+        <view class="section-title">上船时间地点</view>
+        <view class="content">
+            <text>时间：{{jobDetailInfo.selectedDate}}</text>
+            <text>地点：{{jobDetailInfo.selectedLocation}}</text>
+        </view>
+    </view>
+
+    <view class="section">
+        <view class="section-title">待遇</view>
+        <view class="content">
+            <text>{{jobDetailInfo.selectedSalary}}{{jobDetailInfo.totalSalary}}元</text>
+        </view>
+    </view>
+
+    <view class="section">
+        <view class="section-title">岗位描述</view>
+        <view class="content">
+            <text>{{jobDetailInfo.jobDescription}}</text>
+        </view>
+    </view>
+
+    <view class="section">
+        <view class="section-title">联系电话</view>
+        <view class="content">
+            <text>{{jobDetailInfo.mobilePhone}}</text>
+        </view>
+    </view>
+    <view class="date">发布时间：{{formattedDate}}</view>
+    <view class="tools">
+        <text class="tel" bindtap="makePhoneCall">拨打电话</text>
+        <text class="accept" bindtap="accept">审核通过</text>
+        <text class="reject" bindtap="reject">拒绝审核</text>
+    </view>
+</view>

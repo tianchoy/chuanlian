@@ -1,0 +1,10 @@
+<!--components/tabbar/tabBar.wxml-->
+<view class="tab-bar">
+    <block wx:for="{{list}}" wx:key="index">
+        <view class="tab-item {{activeIndex === index ? 'active' : ''}}" bindtap="switchTab" data-index="{{index}}" data-path="{{item.pagePath}}">
+            <image src="{{activeIndex === index ? item.selectedIconPath : item.iconPath}}" mode="aspectFit" />
+            <text>{{item.text}}</text>
+            <view wx:if="{{item.badge}}" class="badge">{{item.badge}}</view>
+        </view>
+    </block>
+</view>

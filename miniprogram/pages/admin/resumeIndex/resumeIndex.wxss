@@ -1,0 +1,115 @@
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 100vh;
+    background-color: #fff;
+}
+.empty-status{
+    height: 100vh;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.list-content{
+    background-color: #fff;
+}
+.list-box{
+    width: 100%;
+    margin-bottom: 150rpx;
+}
+.list-item{
+    padding: 20rpx;
+    border-bottom: 1rpx solid #eee;
+    margin-bottom: 20rpx;
+}
+.title-box{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 20rpx;
+}
+.item{
+    font-size: 28rpx;
+    display: flex;
+    justify-content: space-between;
+    color: #666;
+}
+.tools text{
+    display: inline-block;
+    margin: 0 15rpx;
+    padding:5rpx 20rpx;
+    border-radius: 8rpx;
+}
+.upState{
+    background-color: #179B16;
+    color: #fff;
+}
+.downState{
+    background-color: #F76260;
+    color: #fff;
+}
+.bt-del{
+    background-color: #EC8B89;
+    color: #fff;
+}
+.edit-status{
+    background-color: #1AAD19;
+    color: #fff;
+}
+
+.status{
+    font-size: 20rpx;
+    padding:5rpx 10rpx;
+    color: #fff;
+    border-radius: 10rpx;
+    margin-left: 10rpx;
+}
+
+/* '审核中','未过审','已审核','已下线' */
+.status-0 {
+    background-color: #10AEFF;
+    color: #fff;
+}
+
+.status-1 {
+    background-color: #C9C9C9;
+    color: #fff;
+}
+
+.status-2 {
+    background-color: #09BB07;
+    color: #fff;
+}
+
+.status-3 {
+    background-color: #F76260;
+    color: #fff;
+}
+
+/* 内容区域样式 */
+.content {
+    flex: 1;
+    width: 100%;
+    background-color: #fff;
+}
+
+.button-container {
+    position: fixed;
+    bottom: 0;
+    padding: 35rpx 0;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.custom-btn {
+    margin: 0 50rpx;
+    padding: 15rpx 20rpx;
+    background-color: #007bff;
+    color: white;
+    border-radius: 10rpx;
+    font-size: 32rpx;
+}

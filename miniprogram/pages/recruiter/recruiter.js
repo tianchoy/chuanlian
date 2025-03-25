@@ -38,6 +38,9 @@ Page({
     getJobs() {
         wx.cloud.callFunction({
             name: 'getJobs',
+            data:{
+                types: '2'
+            },
             success: res => {
                 this.setData({
                     tabs: res.result.tabs,
