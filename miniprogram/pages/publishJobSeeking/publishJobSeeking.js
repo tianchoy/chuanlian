@@ -17,7 +17,7 @@ Page({
         selectedGender: '男',
         salaryOptions: ['每月', '每日'],
         selectedSalary: '每月',
-        year: '',
+        age: '',
         location: '',
         amount: '',
         skill: '',
@@ -25,6 +25,7 @@ Page({
         charCount: 0,
         maxLength: 50,
         openid: '',
+        id:'',
         isLogin: false,
         isLoading: false,
         isSubmitting: false, // 新增字段，用于控制提交按钮的禁用状态
@@ -37,6 +38,7 @@ Page({
         this.getOpenid();
         console.log(options);
         const id = options.id;
+        this.setData({id})
         const openid = this.data.openid;
         if (openid && id) {
             this.getResumesInfo(openid, id);
@@ -69,7 +71,7 @@ Page({
                 that.setData({
                     selectedCertificate: res.data[0].selectedCertificate,
                     selectedRank: res.data[0].selectedRank,
-                    year: res.data[0].age,
+                    age: res.data[0].age,
                     selectedGender: res.data[0].selectedGender,
                     location: res.data[0].location,
                     selectedSalary: res.data[0].selectedSalary,
@@ -132,7 +134,7 @@ Page({
     // 设置年龄
     bindYearInput: function (e) {
         this.setData({
-            year: e.detail.value,
+            age: e.detail.value,
         });
     },
 
@@ -181,49 +183,69 @@ Page({
     // 提交表单
     submitForm: function () {
         if (this.data.isSubmitting) {
-            return; // 如果正在提交中，直接返回，防止重复提交
+            return; // 防止重复提交
         }
-
-        this.setData({ isSubmitting: true }); // 开始提交，锁定按钮
-
+    
+        this.setData({ isSubmitting: true });
+    
         const {
+            id,
             selectedCertificate,
             selectedRank,
             selectedGender,
-            year,
+            age,
             location,
             selectedSalary,
             amount,
             skill,
             mobilePhone,
         } = this.data;
-
-        // 检查必填字段
-        if (!selectedCertificate || !selectedRank || !selectedGender || !year || !location || !selectedSalary || !amount || !skill || !mobilePhone) {
+       
+        // 特殊处理水手岗位
+        const finalRank = selectedCertificate === '水手' ? '水手' : selectedRank;
+     console.log(!selectedCertificate ,
+        (!selectedRank && selectedCertificate !== '水手') , 
+        !selectedGender,
+        !age ,
+        !location ,
+        !selectedSalary ,
+        !amount ,
+        !skill ,
+        !mobilePhone)
+        // 检查必填字段（修改后的验证逻辑）
+        if (!selectedCertificate ||
+            (!selectedRank && selectedCertificate !== '水手') || // 只有当证书不是"水手"时才验证职位
+            !selectedGender ||
+            !age ||
+            !location ||
+            !selectedSalary ||
+            !amount ||
+            !skill ||
+            !mobilePhone) {
             wx.showToast({
                 title: '请填写完整信息',
                 icon: 'none',
             });
-            this.setData({ isSubmitting: false }); // 提交失败，解锁按钮
+            this.setData({ isSubmitting: false });
             return;
         }
-
-        // 提交逻辑
+    
+        // 提交数据
         const formData = {
-            openid: this.data.openid, // openid
-            selectedCertificate, // 职位大类
-            selectedRank, // 职位名称
-            age: year, // 年龄
-            selectedGender, // 性别
-            amount, // 金额
-            selectedSalary, // 月薪、日薪
-            location, // 上船地点
-            skill, // 技能描述
-            mobilePhone, // 电话号码
-            resumesStatus: '0',
+            id,
+            openid: this.data.openid,
+            selectedCertificate,
+            selectedRank: finalRank, // 使用处理后的职位
+            age: age,
+            selectedGender,
+            amount,
+            selectedSalary,
+            location,
+            skill,
+            mobilePhone,
+            resumesStatus: '0',// 招聘状态为0“审核中”，1“未过审”，2“已发布”，3“已下线”，默认状态为“0审核中”
         };
-        console.log(formData);
-
+    
         wx.cloud.callFunction({
             name: 'addResume',
             data: formData,
@@ -232,7 +254,6 @@ Page({
                     title: '发布成功，请等审核',
                     icon: 'success',
                 });
-                console.log('发布成功', res);
                 wx.navigateBack();
             },
             fail: err => {
@@ -243,8 +264,8 @@ Page({
                 console.error('发布失败', err);
             },
             complete: () => {
-                this.setData({ isSubmitting: false }); // 提交完成，解锁按钮
-            },
+                this.setData({ isSubmitting: false });
+            }
         });
     },
 

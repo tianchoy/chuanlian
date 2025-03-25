@@ -185,11 +185,11 @@ Page({
         if (this.data.isSubmitting) {
             return; // 如果正在提交中，直接返回，防止重复提交
         }
-
+    
         this.setData({ isSubmitting: true }); // 开始提交，锁定按钮
-
+    
         const {
-            id, // 数据的唯一标识，如果存在则更新，否则新增
+            id,
             selectedJobCategory,
             selectedJobType,
             routeFrom,
@@ -202,15 +202,15 @@ Page({
             mobilePhone,
             openid,
         } = this.data;
-
-        // 检查必填字段
+    
+        // 检查必填字段（修改后的验证逻辑）
         if (
             !selectedJobCategory ||
-            !selectedJobType ||
+            (!selectedJobType && selectedJobCategory !== '水手') || // 只有当分类不是"水手"时才验证岗位
             !routeFrom ||
             !routeTo ||
             !selectedDate ||
-            !selectedLocation ||
+            !selectedLocation.length || // 确保是数组且有值
             !totalSalary ||
             !jobDescription ||
             !mobilePhone ||
@@ -223,15 +223,15 @@ Page({
             this.setData({ isSubmitting: false }); // 提交失败，解锁按钮
             return;
         }
-
+    
         // 提交逻辑
         wx.cloud.callFunction({
-            name: 'addJob', // 云函数名称
+            name: 'addJob',
             data: {
-                id, // 传递 id，如果存在则更新，否则新增
+                id,
                 openid,
                 selectedJobCategory,
-                selectedJobType,
+                selectedJobType: selectedJobCategory === '水手' ? '水手' : selectedJobType, // 确保水手岗位有值
                 routeFrom,
                 routeTo,
                 selectedDate,
@@ -259,7 +259,6 @@ Page({
                         icon: 'none',
                     });
                 }
-                // this.setData({ isSubmitting: false }); // 提交完成，解锁按钮
             },
             fail: err => {
                 console.error('操作失败', err);
@@ -267,7 +266,7 @@ Page({
                     title: '操作失败，请重试',
                     icon: 'none',
                 });
-                this.setData({ isSubmitting: false }); // 提交失败，解锁按钮
+                this.setData({ isSubmitting: false });
             },
         });
     },

@@ -57,6 +57,7 @@ Page({
                 types: '2'
             },
             success: res => {
+                console.log(res.result)
                 this.setData({
                     tabs: res.result.tabs,
                     jobLists: res.result.resumesLists
