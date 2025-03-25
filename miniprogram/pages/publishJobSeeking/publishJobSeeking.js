@@ -220,7 +220,7 @@ Page({
             location, // 上船地点
             skill, // 技能描述
             mobilePhone, // 电话号码
-            rusumesStatus: '0',
+            resumesStatus: '0',
         };
         console.log(formData);
 

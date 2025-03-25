@@ -27,12 +27,12 @@
                 <view class="title-box">
                     <view class="title">
                         {{item.title}}
-                        <text class="status  status-{{item.rusumesStatus}}">{{status[item.rusumesStatus]}}</text>
+                        <text class="status  status-{{item.resumesStatus}}">{{status[item.resumesStatus]}}</text>
                     </view>
                     <view class="tools">
-                        <text class="upState" wx:if="{{item.rusumesStatus === '3'}}" data-type="resume" data-action="online" bindtap="updateStatus" data-id="{{item.id}}">上线</text>
-                        <text class="downState" wx:if="{{item.rusumesStatus === '2'}}"  data-type="resume"  data-action="offline" bindtap="updateStatus" data-id="{{item.id}}">下线</text>
-                        <text class="edit-status" wx:if="{{item.rusumesStatus === '1'}}" data-id="{{item.id}}" bind:tap="editStatus" data-type="resume">编辑</text>
+                        <text class="upState" wx:if="{{item.resumesStatus === '3'}}" data-type="resume" data-action="online" bindtap="updateStatus" data-id="{{item.id}}">上线</text>
+                        <text class="downState" wx:if="{{item.resumesStatus === '2'}}"  data-type="resume"  data-action="offline" bindtap="updateStatus" data-id="{{item.id}}">下线</text>
+                        <text class="edit-status" wx:if="{{item.resumesStatus === '1'}}" data-id="{{item.id}}" bind:tap="editStatus" data-type="resume">编辑</text>
                         <text class="bt-del" data-id="{{item.id}}" data-type="resumes" bind:tap="btDel">删除</text>
                     </view>
                 </view>

@@ -15,7 +15,7 @@ exports.main = async (event, context) => {
         location,// 上船地点
         skill, //技能描述
         mobilePhone, // 电话号码
-        rusumesStatus = '0' // 求职状态为0“审核中”，1“未过审”，2“已审核”，3“已下线”，默认状态为“0审核中”
+        resumesStatus = '0' // 求职状态为0“审核中”，1“未过审”，2“已审核”，3“已下线”，默认状态为“0审核中”
     } = event
 
     try {
@@ -31,7 +31,7 @@ exports.main = async (event, context) => {
                 location,// 上船地点
                 skill, //技能描述
                 mobilePhone, // 电话号码
-                rusumesStatus,//求职状态
+                resumesStatus,//求职状态
                 createdAt: db.serverDate(),
                 updatedAt: db.serverDate()
             }

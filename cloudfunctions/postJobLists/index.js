@@ -57,7 +57,7 @@ exports.main = async (event, context) => {
             age: itemr.age,
             selectedGender: itemr.selectedGender,
             id: itemr._id,
-            rusumesStatus: itemr.rusumesStatus
+            resumesStatus: itemr.resumesStatus
         })
     );
 

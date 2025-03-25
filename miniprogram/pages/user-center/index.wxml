@@ -48,7 +48,7 @@
 
             <view class="setting_item" wx:if="{{userInfo.isAdmin}}" bind:tap="gotoAdmin">
                 <view class="left">
-                    <image class="setting_icon" src="../../images/icons/share.svg" />
+                    <image class="setting_icon" src="../../images/icons/setting.svg" />
                     <view class="setting_text">
                         <button class="contact-button">管理中心</button>
                     </view>
