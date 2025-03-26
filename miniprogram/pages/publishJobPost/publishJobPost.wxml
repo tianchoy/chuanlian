@@ -19,9 +19,9 @@
     <view class="section">
         <text class="label">航线信息</text>
         <view class="input-group">
-            <input placeholder="请输入起点" value="{{routeFrom}}" bindinput="handleRouteFromInput" class="input" />
+            <input placeholder="请输入起点" type="text" value="{{routeFrom}}" bindinput="handleRouteFromInput" class="input" />
             <text class="arrow">→</text>
-            <input placeholder="请输入终点" value="{{routeTo}}" bindinput="handleRouteToInput" class="input" />
+            <input placeholder="请输入终点" type="text" value="{{routeTo}}" bindinput="handleRouteToInput" class="input" />
         </view>
     </view>
 
@@ -47,7 +47,7 @@
                     {{selectedSalary ? selectedSalary : '请选择天/月'}}
                 </view>
             </picker>
-            <input type="number" placeholder="请输入具体金额" value="{{totalSalary}}" bindinput="handleMoneyChange" class="input" />
+            <input type="number" placeholder="请输入具体金额" value="{{totalSalary}}" bindinput="handleMoneyChange" class="input" maxlength="5" />
         </view>
     </view>
 
@@ -55,7 +55,7 @@
     <view class="section">
         <text class="label">手机号</text>
         <view class="picker-group">
-            <input type="number" placeholder="请输入手机号" value="{{mobilePhone}}" bindinput="handlemobilePhoneChange" class="input" />
+            <input type="number" placeholder="请输入手机号" value="{{mobilePhone}}" bindinput="handlemobilePhoneChange" maxlength="11" class="input" />
         </view>
     </view>
 

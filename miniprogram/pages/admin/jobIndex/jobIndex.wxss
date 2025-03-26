@@ -26,6 +26,9 @@
     border-bottom: 1rpx solid #eee;
     margin-bottom: 20rpx;
 }
+.child:last-child{
+    border-bottom: none;
+}
 .title-box{
     display: flex;
     justify-content: space-between;

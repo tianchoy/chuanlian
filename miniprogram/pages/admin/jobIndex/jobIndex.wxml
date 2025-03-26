@@ -3,11 +3,11 @@
     <view class="empty-status" wx:if="{{jobLists.length == 0 }}">暂无需要审核的招聘信息</view>
     <view class="list-box" wx:else>
         <view class="list-item" wx:for="{{jobLists}}" wx:key="index">
-            <view wx:for="{{item}}" wx:key="index">
+            <view class="list-item child" wx:for="{{item}}" wx:key="index">
                 <view class="title-box" bind:tap="viewInfo" data-id="{{item.id}}">
                     <view class="title">
-                        {{item.title}}
-                        <text class="status  status-{{item.status}}">{{status[item.status]}}</text>
+                        {{item.title === '水手水手' ? '水手' : item.title}}
+                        <text class="status status-{{item.status}}">{{status[item.status]}}</text>
                     </view>
                     <view class="tools">
                         <text class="edit-status">查看详情</text>

@@ -6,7 +6,7 @@
             <view class="list-item" wx:for="{{item}}" wx:key="index">
                 <view class="title-box" bindtap="getResumeDetails" data-id="{{item.id}}">
                     <view class="title">
-                        {{item.title}}
+                        {{item.title === '水手水手' ? '水手' : item.title}}
                     </view>
                     <view class="tools">
                         <text class="upState">查看详情</text>

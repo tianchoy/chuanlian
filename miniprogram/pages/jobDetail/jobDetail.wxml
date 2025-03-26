@@ -5,7 +5,7 @@
   <view class="section">
     <view class="section-title">招聘岗位</view>
     <view class="content">
-      <text> {{jobDetailInfo.selectedJobCategory}}{{jobDetailInfo.selectedJobType}}</text>
+      <text> {{jobDetailInfo.selectedJobCategory}}{{jobDetailInfo.selectedJobType === '水手' ? '' : jobDetailInfo.selectedJobType}}</text>
       <text>航线：{{jobDetailInfo.routeFrom}} - {{jobDetailInfo.routeTo}}</text>
     </view>
   </view>

@@ -5,7 +5,7 @@ Page({
      */
     data: {
         certificatePositions: [
-            { name: '一类', items: ['船长', '轮机长', '大副', '大管轮', '二副','二管轮', '三副', '三管轮'] },
+            { name: '一类', items: ['船长', '轮机长', '大副', '大管轮', '二副', '二管轮', '三副', '三管轮'] },
             { name: '二类', items: ['船长', '驾驶员', '轮机长', '轮机员'] },
             { name: '三类', items: ['船长', '驾驶员', '轮机长', '轮机员'] },
             { name: '水手', items: ['水手'] }
@@ -25,7 +25,7 @@ Page({
         charCount: 0,
         maxLength: 50,
         openid: '',
-        id:'',
+        id: '',
         isLogin: false,
         isLoading: false,
         isSubmitting: false, // 新增字段，用于控制提交按钮的禁用状态
@@ -38,7 +38,7 @@ Page({
         this.getOpenid();
         console.log(options);
         const id = options.id;
-        this.setData({id})
+        this.setData({ id })
         const openid = this.data.openid;
         if (openid && id) {
             this.getResumesInfo(openid, id);
@@ -181,13 +181,19 @@ Page({
     },
 
     // 提交表单
+    // 提交表单（带详细验证）
     submitForm: function () {
         if (this.data.isSubmitting) {
             return; // 防止重复提交
         }
-    
+
+        wx.showLoading({
+            title: '提交中...',
+            mask: true
+        });
+
         this.setData({ isSubmitting: true });
-    
+
         const {
             id,
             selectedCertificate,
@@ -200,42 +206,131 @@ Page({
             skill,
             mobilePhone,
         } = this.data;
-       
+
         // 特殊处理水手岗位
         const finalRank = selectedCertificate === '水手' ? '水手' : selectedRank;
-     console.log(!selectedCertificate ,
-        (!selectedRank && selectedCertificate !== '水手') , 
-        !selectedGender,
-        !age ,
-        !location ,
-        !selectedSalary ,
-        !amount ,
-        !skill ,
-        !mobilePhone)
-        // 检查必填字段（修改后的验证逻辑）
-        if (!selectedCertificate ||
-            (!selectedRank && selectedCertificate !== '水手') || // 只有当证书不是"水手"时才验证职位
-            !selectedGender ||
-            !age ||
-            !location ||
-            !selectedSalary ||
-            !amount ||
-            !skill ||
-            !mobilePhone) {
+
+        // 逐项验证（带具体错误提示）
+        if (!selectedCertificate) {
+            wx.hideLoading();
             wx.showToast({
-                title: '请填写完整信息',
+                title: '请选择证书类别',
                 icon: 'none',
             });
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
+        if (!finalRank) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '请选择具体职位',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+
+        if (!selectedGender) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '请选择性别',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+
+        if (!age) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '请输入年龄',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        } else if(isNaN(age)) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '年龄需为数字',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+
+        if (!location) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '请输入常驻地点',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+
+        if (!selectedSalary) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '请选择薪资单位',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+
+        if (!amount) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '请输入期望薪资',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        } else if (isNaN(amount)) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '薪资需为数字',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+
+        if (!skill) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '请输入个人技能',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+
+        if (!mobilePhone) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '请输入手机号码',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        } else if (!this.validatePhoneNumber(mobilePhone)) {
+            wx.hideLoading();
+            wx.showToast({
+                title: '手机号格式不正确',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+
         // 提交数据
         const formData = {
             id,
             openid: this.data.openid,
             selectedCertificate,
-            selectedRank: finalRank, // 使用处理后的职位
+            selectedRank: finalRank,
             age: age,
             selectedGender,
             amount,
@@ -243,22 +338,27 @@ Page({
             location,
             skill,
             mobilePhone,
-            resumesStatus: '0',// 招聘状态为0“审核中”，1“未过审”，2“已发布”，3“已下线”，默认状态为“0审核中”
+            resumesStatus: '0',
         };
-    
+
         wx.cloud.callFunction({
             name: 'addResume',
             data: formData,
             success: res => {
+                wx.hideLoading();
                 wx.showToast({
-                    title: '发布成功，请等审核',
+                    title: '提交成功，请等待审核',
                     icon: 'success',
+                    duration: 2000
                 });
-                wx.navigateBack();
+                setTimeout(() => {
+                    wx.navigateBack();
+                }, 1500);
             },
             fail: err => {
+                wx.hideLoading();
                 wx.showToast({
-                    title: '发布失败，请修改',
+                    title: '提交失败，请重试',
                     icon: 'none',
                 });
                 console.error('发布失败', err);

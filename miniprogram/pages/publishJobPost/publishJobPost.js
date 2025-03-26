@@ -180,7 +180,7 @@ Page({
     // 处理提交
     handleSubmit() {
         wx.showLoading({
-          title: '发布中',
+            title: '发布中',
         })
         if (this.data.isSubmitting) {
             return; // 如果正在提交中，直接返回，防止重复提交
@@ -203,24 +203,103 @@ Page({
             openid,
         } = this.data;
     
-        // 检查必填字段（修改后的验证逻辑）
-        if (
-            !selectedJobCategory ||
-            (!selectedJobType && selectedJobCategory !== '水手') || // 只有当分类不是"水手"时才验证岗位
-            !routeFrom ||
-            !routeTo ||
-            !selectedDate ||
-            !selectedLocation.length || // 确保是数组且有值
-            !totalSalary ||
-            !jobDescription ||
-            !mobilePhone ||
-            !selectedSalary
-        ) {
+        // 验证各个字段并给出具体提示
+        if (!selectedJobCategory) {
             wx.showToast({
-                title: '请填写完整信息',
+                title: '请选择职位类别',
                 icon: 'none',
             });
-            this.setData({ isSubmitting: false }); // 提交失败，解锁按钮
+            this.setData({ isSubmitting: false });
+            return;
+        }
+    
+        if (!selectedJobType && selectedJobCategory !== '水手') {
+            wx.showToast({
+                title: '请选择具体岗位',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+    
+        if (!routeFrom) {
+            wx.showToast({
+                title: '请输入航线起点',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+    
+        if (!routeTo) {
+            wx.showToast({
+                title: '请输入航线终点',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+    
+        if (!selectedDate) {
+            wx.showToast({
+                title: '请选择上船时间',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+    
+        if (!selectedLocation || selectedLocation.length === 0) {
+            wx.showToast({
+                title: '请选择上船地点',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+    
+        if (!selectedSalary) {
+            wx.showToast({
+                title: '请选择薪资单位',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+    
+        if (!totalSalary) {
+            wx.showToast({
+                title: '请输入薪资金额',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+    
+        if (!jobDescription) {
+            wx.showToast({
+                title: '请输入岗位描述',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+    
+        if (!mobilePhone) {
+            wx.showToast({
+                title: '请输入手机号码',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
+            return;
+        }
+    
+        if (!this.validatePhoneNumber(mobilePhone)) {
+            wx.showToast({
+                title: '请输入有效的手机号码',
+                icon: 'none',
+            });
+            this.setData({ isSubmitting: false });
             return;
         }
     
@@ -231,7 +310,7 @@ Page({
                 id,
                 openid,
                 selectedJobCategory,
-                selectedJobType: selectedJobCategory === '水手' ? '水手' : selectedJobType, // 确保水手岗位有值
+                selectedJobType: selectedJobCategory === '水手' ? '水手' : selectedJobType,
                 routeFrom,
                 routeTo,
                 selectedDate,
@@ -258,10 +337,12 @@ Page({
                         title: id ? '更新失败' : '发布失败',
                         icon: 'none',
                     });
+                    this.setData({ isSubmitting: false });
                 }
             },
             fail: err => {
                 console.error('操作失败', err);
+                wx.hideLoading()
                 wx.showToast({
                     title: '操作失败，请重试',
                     icon: 'none',

@@ -70,12 +70,12 @@ Page({
             publishJobPost: {
                 collection: 'jobs',
                 pageUrl: '/pages/publishJobPost/publishJobPost',
-                limit: 10
+                limit: 99999
             },
             publishJobSeeking: {
                 collection: 'resumes',
                 pageUrl: '/pages/publishJobSeeking/publishJobSeeking',
-                limit: 3
+                limit: 99999
             }
         };
         // 获取当前配置

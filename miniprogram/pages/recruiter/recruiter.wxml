@@ -10,7 +10,7 @@
         <!-- 顶部选项卡 -->
         <scroll-view scroll-x="true" class="tabs" scroll-with-animation scroll-left="{{scrollLeft}}">
             <view wx:for="{{tabs}}" wx:key="index" class="tab {{currentTab === index ? 'active' : ''}}" bindtap="switchTab" data-index="{{index}}">
-                <text>{{item.name}}</text>
+                <text>{{item.name === '水手水手' ? '水手' : item.name}}</text>
             </view>
         </scroll-view>
         <!-- 内容区域 -->
