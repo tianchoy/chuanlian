@@ -15,10 +15,19 @@ Page({
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
-        const resumeId = options.id
-        if (resumeId) {
-            this.getResumeDetails(resumeId); // 调用方法获取数据
+        let resumeId = options.id || wx.getStorageSync('adminResumeId');
+        if (!resumeId) {
+            // 处理错误情况
+            wx.showToast({
+                title: '参数错误，请返回重试',
+                icon: 'none'
+            });
+            setTimeout(() => {
+                wx.navigateBack();
+            }, 1500);
+            return;
         }
+        this.getResumeDetails(resumeId); // 调用方法获取数据
     },
 
     //获取人才信息

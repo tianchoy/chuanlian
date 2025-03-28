@@ -34,8 +34,11 @@ Page({
         })
     },
     viewInfo(e) {
+        const id = e.target.dataset.id
+        console.log('jobid:',id)
+        wx.setStorageSync('adminJobId', id);
         wx.navigateTo({
-            url: '../jobDetail/jobDetail?id=' + e.target.dataset.id,
+            url: '../jobDetail/jobDetail?id=' + id,
         })
     },
 

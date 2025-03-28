@@ -22,18 +22,28 @@ Page({
     },
     async getUserInfo() {
         let that = this
-        let res = await wx.cloud.callFunction({
-            name: 'cl_userInfo',
-            data: {
-                type: 'get'
-            }
-        })
-        const userinfo = res.result
-        wx.setStorageSync('userinfo', userinfo)
-        that.setData({
-            userInfo: res.result
-        })
-        that.hideLoading()
+        const userInfo = wx.getStorageSync('userinfo')
+        if (!!userInfo) {
+            console.log('从缓存中读取userinfo:',userInfo)
+            that.setData({
+                userInfo
+            })
+            that.hideLoading()
+        } else {
+            let res = await wx.cloud.callFunction({
+                name: 'cl_userInfo',
+                data: {
+                    type: 'get'
+                }
+            })
+            const userinfo = res.result
+            console.log('获取userinfo：',userinfo)
+            wx.setStorageSync('userinfo', userinfo)
+            that.setData({
+                userInfo: res.result
+            })
+            that.hideLoading()
+        }
     },
     onChooseAvatar(e) {
         let that = this
@@ -63,16 +73,16 @@ Page({
     },
 
     //常见问题页面
-    toqa(){
+    toqa() {
         console.log('aaaa')
         wx.navigateTo({
-          url: '/pages/question/question',
+            url: '/pages/question/question',
         })
     },
-    gotoAdmin(){
+    gotoAdmin() {
         console.log('去管理中心')
         wx.redirectTo({
-          url: '/pages/admin/jobIndex/jobIndex',
+            url: '/pages/admin/jobIndex/jobIndex',
         })
     },
 
@@ -94,19 +104,19 @@ Page({
         })
         that.hideLoading()
     },
-    showLoading(){
+    showLoading() {
         wx.showLoading({
             title: '加载中',
         })
     },
-    hideLoading(){
+    hideLoading() {
         wx.hideLoading()
     },
     onShareAppMessage(res) {
         return {
-          title: this.data.shareTitle,
-          path: this.data.sharePath
+            title: this.data.shareTitle,
+            path: this.data.sharePath
         };
-      }
+    }
 
 });

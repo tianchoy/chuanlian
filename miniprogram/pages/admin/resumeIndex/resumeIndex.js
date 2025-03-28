@@ -37,8 +37,8 @@ Page({
     },
     getResumeDetails(e) {
         this.showLoading()
-        console.log(e.currentTarget.dataset.id)
         const id = e.currentTarget.dataset.id
+        wx.setStorageSync('adminResumeId', id);
         wx.navigateTo({
             url: '../resumeDetail/resumeDetail?id=' + id,
         })

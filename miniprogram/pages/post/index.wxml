@@ -26,7 +26,7 @@
             <view class="list-item" wx:for="{{item}}" wx:key="index">
                 <view class="title-box">
                     <view class="title">
-                        {{item.title}}
+                        {{item.title === '水手水手' ? '水手': item.title}}
                         <text class="status  status-{{item.resumesStatus}}">{{status[item.resumesStatus]}}</text>
                     </view>
                     <view class="tools">

@@ -28,7 +28,8 @@ Page({
         openid: '',
         charCount: 0,
         maxLength: 50,
-        id: ''
+        id: '',
+        familyName:''
     },
 
     /**
@@ -77,7 +78,8 @@ Page({
                     selectedSalary: res.data[0].selectedSalary,
                     totalSalary: res.data[0].totalSalary,
                     mobilePhone: res.data[0].mobilePhone,
-                    jobDescription: res.data[0].jobDescription
+                    jobDescription: res.data[0].jobDescription,
+                    familyName:res.data[0].familyName
                 })
             },
             fail: function (err) {
@@ -201,6 +203,7 @@ Page({
             jobDescription,
             mobilePhone,
             openid,
+            familyName
         } = this.data;
     
         // 验证各个字段并给出具体提示
@@ -284,6 +287,15 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
+
+        if(!familyName){
+            wx.showToast({
+              title: '请输入姓名',
+              icon:'none'
+            })
+            this.setData({isSubmitting:false});
+            return;
+        }
     
         if (!mobilePhone) {
             wx.showToast({
@@ -319,6 +331,7 @@ Page({
                 totalSalary,
                 jobDescription,
                 mobilePhone,
+                familyName
             },
             success: res => {
                 console.log('云函数返回:', res);
