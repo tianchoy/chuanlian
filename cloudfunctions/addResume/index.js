@@ -16,6 +16,7 @@ exports.main = async (event, context) => {
         location,
         skill,
         mobilePhone,
+        familyName,
         resumesStatus = '0'
     } = event
 
@@ -27,6 +28,7 @@ exports.main = async (event, context) => {
         !selectedSalary ||
         !location ||
         !skill ||
+        !familyName||
         !mobilePhone) {
         return { code: 0, message: '请填写完整信息' }
     }
@@ -51,6 +53,7 @@ exports.main = async (event, context) => {
         location,
         skill,
         mobilePhone,
+        familyName,
         resumesStatus,
         updatedAt: db.serverDate()
     }

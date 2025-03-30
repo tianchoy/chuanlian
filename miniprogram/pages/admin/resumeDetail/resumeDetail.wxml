@@ -34,9 +34,10 @@
   </view>
   
   <view class="section">
-    <view class="section-title">联系电话</view>
+    <view class="section-title">联系信息</view>
     <view class="content">
-      <text>{{resumes.mobilePhone}}</text>
+        <text>联系人：{{resumes.familyName}}</text>
+      <text>电话：{{resumes.mobilePhone}}</text>
     </view>
   </view>
   <view class="date">发布时间：{{formattedDate}}</view>

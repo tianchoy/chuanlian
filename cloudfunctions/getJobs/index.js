@@ -29,6 +29,7 @@ exports.main = async (event, context) => {
             route: `${item.routeFrom}~${item.routeTo}`,
             date: item.selectedDate,
             selectedLocation: item.selectedLocation,
+            familyName:item.familyName,
             id: item._id
         })
     })

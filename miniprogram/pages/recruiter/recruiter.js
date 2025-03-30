@@ -1,184 +1,141 @@
 // pages/recruiter/recruiter.js
-Page({
+import { trackBrowse, checkBrowsedStatus, BROWSE_TYPE } from '../../utils/browseTracker'
+const app = getApp()
 
-    /**
-     * 页面的初始数据
-     */
+Page({
     data: {
         isLogin: false,
         isLoading: false,
         tabs: [],
         jobLists: [],
-        currentTab: 0, // 当前选中的 Tab
-        scrollLeft: 0, // 选项卡滚动位置
-        swiperHeight: 0, // swiper 的高度
-        tabWidth: 117, // 每个 Tab 的宽度
-        screenWidth: 0,// 屏幕宽度
+        currentTab: 0,
+        scrollLeft: 0,
+        swiperHeight: 0,
+        tabWidth: 117,
+        screenWidth: 0
     },
 
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad(options) {
-        this.showLoading()
-        // 获取屏幕宽度
-        const systemInfo = wx.getSystemInfoSync();
-        const windowHeight = systemInfo.windowHeight;
-        const screenWidth = systemInfo.screenWidth;
-        const tabHeight = 50; // 顶部选项卡的高度
-        this.setData({
-            swiperHeight: windowHeight - tabHeight,
-            screenWidth: screenWidth
-        });
+    onLoad() {
+        this.initPage()
         this.getUserId()
         this.getJobs()
+        app.on('jobBrowsed', this.handleJobBrowsed)
     },
 
-    //请求数据渲染列表
-    getJobs() {
-        wx.cloud.callFunction({
-            name: 'getJobs',
-            data:{
-                types: '2'
-            },
-            success: res => {
-                console.log(res.result)
-                this.setData({
-                    tabs: res.result.tabs,
-                    jobLists: res.result.jobLists
-                })
-                this.hideLoading()
-            },
-            fail: err => {
-                console.error('获取失败', err)
-            }
+    onUnload() {
+        app.off('jobBrowsed', this.handleJobBrowsed)
+    },
+
+    initPage() {
+        const systemInfo = wx.getSystemInfoSync()
+        this.setData({
+            swiperHeight: systemInfo.windowHeight - 50,
+            screenWidth: systemInfo.screenWidth
         })
     },
 
-    //跳转至详情页面 
-    toDetail(e) {
+    handleJobBrowsed({ jobId }) {
+        this.setData({
+            jobLists: this.data.jobLists.map(tabJobs =>
+                tabJobs.map(job =>
+                    job._id === jobId ? { ...job, isBrowsed: true } : job
+                )
+            )
+        })
+    },
+
+    async getJobs() {
         this.showLoading()
-        const id = e.target.dataset.id
-        console.log(id)
-        this.hideLoading()
-        wx.navigateTo({
-            url: '/pages/jobDetail/jobDetail?id=' + id,
-        })
+        try {
+            const res = await wx.cloud.callFunction({
+                name: 'getJobs',
+                data: { types: '2' }
+            })
+
+            let jobLists = res.result.jobLists
+            if (this.data.isLogin) {
+                const allJobIds = jobLists.flat().map(job => job.id).filter(Boolean)
+                if (allJobIds.length > 0) {
+                    const browsedIds = await checkBrowsedStatus(allJobIds, BROWSE_TYPE.JOB)
+                    jobLists = jobLists.map(tabJobs =>
+                        tabJobs.map(job => job ? {
+                            ...job,
+                            isBrowsed: browsedIds.includes(job.id)
+                        } : null).filter(Boolean)
+                    )
+                }
+            }
+            this.setData({
+                tabs: res.result.tabs,
+                jobLists
+            })
+        } catch (err) {
+            console.error('获取岗位失败:', err)
+            wx.showToast({
+                title: '加载失败',
+                icon: 'none'
+            })
+        } finally {
+            this.hideLoading()
+        }
     },
-
-
-    //如果用户没有登陆，则去用户中心登陆
     toLogin() {
         wx.switchTab({
             url: '/pages/user-center/index',
         })
     },
-    //获取用户id来确定用户是否是登陆了
-    getUserId() {
-        this.setData({ isLoading: true }); // 开始加载
-        const userinfo = wx.getStorageSync('userinfo');
-        console.log('用户ID:', userinfo);
-        const userid = userinfo.nickName
-        this.setData({
-            isLogin: !!userid, // 更新登录状态
-            isLoading: false, // 结束加载
-        });
-        console.log('加载状态:', this.data.isLoading);
-    },
-    // 切换 Tab
-    switchTab(e) {
-        const index = e.currentTarget.dataset.index;
-        this.setData({
-            currentTab: index
-        });
-        this.adjustScrollPosition(index);
-    },
-    // Swiper 切换事件
-    swiperChange(e) {
-        const index = e.detail.current;
-        this.setData({
-            currentTab: index
-        });
-        this.adjustScrollPosition(index);
-    },
-    // 调整滚动位置，确保选中的 Tab 居中
-    adjustScrollPosition(index) {
-        const { tabWidth, screenWidth } = this.data;
-        const halfScreenWidth = screenWidth / 2; // 屏幕宽度的一半
-        const scrollLeft = index * tabWidth - halfScreenWidth + tabWidth / 2;
+    toDetail(e) {
+        const id = e.currentTarget.dataset.id
+        if (!id) return
 
-        this.setData({
-            scrollLeft: scrollLeft
-        });
-    },
-
-    onTabItemTap(item) {
-        console.log('TabBar 被点击了', item);
-        if (item.index === 0) {
-            this.getJobs()
+        if (this.data.isLogin) {
+            trackBrowse(id, BROWSE_TYPE.JOB)
         }
-    },
 
-    showLoading(){
-        wx.showLoading({
-            title: '加载中',
+        wx.navigateTo({
+            url: `/pages/jobDetail/jobDetail?id=${id}`,
         })
     },
-    hideLoading(){
+
+    getUserId() {
+        const userinfo = wx.getStorageSync('userinfo')
+        this.setData({
+            isLogin: !!userinfo?.openId || !!userinfo?._id
+        })
+    },
+
+    switchTab(e) {
+        const index = e.currentTarget.dataset.index
+        this.setData({ currentTab: index }, () => {
+            this.adjustScrollPosition(index)
+        })
+    },
+
+    swiperChange(e) {
+        const index = e.detail.current
+        this.setData({ currentTab: index }, () => {
+            this.adjustScrollPosition(index)
+        })
+    },
+
+    adjustScrollPosition(index) {
+        const { tabWidth, screenWidth } = this.data
+        const scrollLeft = index * tabWidth - screenWidth / 2 + tabWidth / 2
+        this.setData({ scrollLeft: Math.max(0, scrollLeft) })
+    },
+
+    showLoading() {
+        wx.showLoading({ title: '加载中', mask: true })
+    },
+
+    hideLoading() {
         wx.hideLoading()
     },
 
-    /**
-     * 生命周期函数--监听页面初次渲染完成
-     */
-    onReady() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面显示
-     */
     onShow() {
-        // 页面显示时执行
-        console.log('找船模块，onShow 加载状态:', this.data.isLoading);
-        if (!this.data.isLogin && !this.data.isLoading) {
-            console.log('找船模块，用户未登录，重新获取用户ID');
-            this.getUserId();
+        if (!this.data.isLogin) {
+            this.getUserId()
         }
-
-    },
-
-    /**
-     * 生命周期函数--监听页面隐藏
-     */
-    onHide() {
-    },
-
-    /**
-     * 生命周期函数--监听页面卸载
-     */
-    onUnload() {
-
-    },
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh() {
-
-    },
-
-    /**
-     * 页面上拉触底事件的处理函数
-     */
-    onReachBottom() {
-
-    },
-
-    /**
-     * 用户点击右上角分享
-     */
-    onShareAppMessage() {
-
+        this.getJobs()
     }
 })

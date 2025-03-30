@@ -25,6 +25,7 @@ exports.main = async (event, context) => {
             salary: `${item.selectedSalary}${item.amount}`,
             selectedLocation:item.selectedLocation,
             age:item.age,
+            familyName:item.familyName,
             selectedGender:item.selectedGender,
             resumesStatus:item.resumesStatus,
             id: item._id

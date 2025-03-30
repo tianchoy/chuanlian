@@ -1,12 +1,12 @@
 <!--pages/publishJobSeeking/publishJobSeeking.wxml-->
 <view class="container">
-<view class="title">个人基本信息</view>
+    <view class="title">个人基本信息</view>
     <view class="section">
         <text class="section-title">证书岗位</text>
         <view class="picker-box">
-            <picker class="picker-item" mode="selector" range="{{certificatePositions}}" bindchange="bindCertificateChange"  range-key="name">
+            <picker class="picker-item" mode="selector" range="{{certificatePositions}}" bindchange="bindCertificateChange" range-key="name">
                 <view class="picker">
-                    选择证书类别：{{selectedCertificate}}
+                    证书类别：{{selectedCertificate}}
                 </view>
             </picker>
 
@@ -33,7 +33,7 @@
     <view class="section">
         <text class="section-title">常驻地点</text>
         <view class="picker-box">
-            <input placeholder="请输入常驻地点" type="text" value="{{location}}" bindinput="bindLocationInput" class="input" />
+            <input placeholder="请输入常驻地点" type="text" value="{{location}}" bindinput="bindLocationInput" class="input single" />
         </view>
     </view>
 
@@ -50,19 +50,20 @@
     </view>
 
     <view class="section">
-        <text class="section-title">电话号码</text>
-        <view class="picker-box">
-            <input class="input single" maxlength="11" value="{{mobilePhone}}" bindinput="bindMobilePhone" type="number"/>
+        <text class="section-title">联系人、电话</text>
+        <view class="input-group">
+            <input type="text" maxlength="5" value="{{familyName}}" placeholder="请输入姓名" bindinput="handleFamilyNameChange" class="input" />
+            <input class="input" maxlength="11" placeholder="输入电话号码" value="{{mobilePhone}}" bindinput="bindMobilePhone" type="number" />
         </view>
     </view>
 
     <view class="section">
         <text class="section-title">特长技能描述</text>
-        <view class="picker-box">
-            <textarea placeholder="请输入特长技能描述" bindinput="bindSkillInput" value="{{skill}}"  maxlength="50"  />
-            <view>已输入 {{charCount}}/50 字</view>
+        <view class="skill-box">
+            <textarea placeholder="请输入特长技能描述" bindinput="bindSkillInput" value="{{skill}}" maxlength="50" />
         </view>
+        <view>已输入 {{charCount}}/50 字</view>
     </view>
 
-    <button bindtap="submitForm"  disabled="{{isSubmitting}}">保存提交</button>
+    <button bindtap="submitForm" disabled="{{isSubmitting}}">保存提交</button>
 </view>

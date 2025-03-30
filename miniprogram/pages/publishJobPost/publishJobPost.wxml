@@ -8,8 +8,7 @@
                     {{selectedJobCategory ? selectedJobCategory : '请选择岗位'}}
                 </view>
             </picker>
-
-            <picker mode="selector" range="{{subCategories}}"  range-key="name" bindchange="handleJobTypeChange">
+            <picker class="picker-box" mode="selector" range="{{subCategories}}"  range-key="name" bindchange="handleJobTypeChange">
                 <view class="picker">{{selectedJobType ? selectedJobType : '请选择岗位'}}</view>
             </picker>
         </view>
@@ -55,7 +54,7 @@
     <view class="section">
         <text class="label">姓名和手机号</text>
         <view class="input-group">
-            <input type="number" placeholder="姓名" value="{{familyName}}" bindinput="handleFamilyNameChange" maxlength="4" class="input" />
+            <input type="text" placeholder="姓名" value="{{familyName}}" bindinput="handleFamilyNameChange" maxlength="5" class="input" />
             <input type="number" placeholder="请输入手机号" value="{{mobilePhone}}" bindinput="handlemobilePhoneChange" maxlength="11" class="input" />
         </view>
     </view>

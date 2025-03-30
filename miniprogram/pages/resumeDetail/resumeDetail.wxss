@@ -31,12 +31,13 @@ page {
 }
 
 .content {
+    display: flex;
+    justify-content: space-between;
     font-size: 16px;
     text-align: center;
 }
 .content text{
     display: inline-block;
-    margin: 0 50rpx;
 }
 .date{
     width: 100%;

@@ -17,6 +17,7 @@ exports.main = async (event, context) => {
         jobDescription,
         mobilePhone,
         selectedDate,
+        familyName,
         jobStatus = '0',
     } = event;
 
@@ -29,6 +30,7 @@ exports.main = async (event, context) => {
         !selectedLocation ||
         !jobDescription ||
         !mobilePhone ||
+        !familyName||
         !selectedDate) {
         return { code: 0, message: '请填写完整信息' };
     }
@@ -55,6 +57,7 @@ exports.main = async (event, context) => {
             mobilePhone,
             selectedDate,
             jobStatus,
+            familyName,
             updatedAt: db.serverDate(),
         };
 

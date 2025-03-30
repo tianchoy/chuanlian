@@ -151,6 +151,11 @@ Page({
         this.setData({ totalSalary: money })
     },
 
+    //处理用户名
+    handleFamilyNameChange(e){
+        this.setData({familyName:e.detail.value})
+    },
+
     //处理手机号码
     handlemobilePhoneChange(e) {
         const phoneNo = e.detail.value

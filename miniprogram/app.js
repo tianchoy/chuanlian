@@ -11,6 +11,7 @@ App({
         }
         this.checkUpdate();
         this.globalData = {};
+        this._eventListeners = {}
     },
     // 检查更新
     checkUpdate() {
@@ -56,4 +57,27 @@ App({
             });
         }
     },
+    // 添加事件监听
+    on(event, callback) {
+        if (!this._eventListeners[event]) {
+            this._eventListeners[event] = []
+        }
+        this._eventListeners[event].push(callback)
+    },
+
+    // 移除事件监听
+    off(event, callback) {
+        const listeners = this._eventListeners[event]
+        if (listeners) {
+            this._eventListeners[event] = listeners.filter(listener => listener !== callback)
+        }
+    },
+
+    // 触发事件
+    emit(event, data) {
+        const listeners = this._eventListeners[event]
+        if (listeners) {
+            listeners.forEach(listener => listener(data))
+        }
+    }
 });

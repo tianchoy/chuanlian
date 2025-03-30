@@ -1,44 +1,46 @@
 <!--pages/jobDetail/jobDetail.wxml-->
 <view class="container">
-  <view class="title">岗位详情</view>
-  
-  <view class="section">
-    <view class="section-title">招聘岗位</view>
-    <view class="content">
-      <text> {{jobDetailInfo.selectedJobCategory}}{{jobDetailInfo.selectedJobType === '水手' ? '' : jobDetailInfo.selectedJobType}}</text>
-      <text>航线：{{jobDetailInfo.routeFrom}} - {{jobDetailInfo.routeTo}}</text>
+    <view class="title">岗位详情<view wx:if="{{isBrowsed}}" class="browse-badge">
+        <icon type="success" size="14"></icon>
+        <text>已浏览</text>
+    </view></view>
+    
+    <view class="section">
+        <view class="section-title">招聘岗位</view>
+        <view class="content">
+            <text> {{jobDetailInfo.selectedJobCategory}}{{jobDetailInfo.selectedJobType === '水手' ? '' : jobDetailInfo.selectedJobType}}</text>
+            <text>航线：{{jobDetailInfo.routeFrom}} - {{jobDetailInfo.routeTo}}</text>
+        </view>
     </view>
-  </view>
-  
-  <view class="section">
-    <view class="section-title">上船时间地点</view>
-    <view class="content">
-      <text>时间：{{jobDetailInfo.selectedDate}}</text>
-      <text>地点：{{jobDetailInfo.selectedLocation}}</text>
+
+    <view class="section">
+        <view class="section-title">上船时间地点</view>
+        <view class="content">
+            <text>时间：{{jobDetailInfo.selectedDate}}</text>
+            <text>地点：{{jobDetailInfo.selectedLocation}}</text>
+        </view>
     </view>
-  </view>
-  
-  <view class="section">
-    <view class="section-title">待遇</view>
-    <view class="content">
-      <text>{{jobDetailInfo.selectedSalary}}{{jobDetailInfo.totalSalary}}元</text>
+
+    <view class="section">
+        <view class="section-title">待遇</view>
+        <view class="content">
+            <text>{{jobDetailInfo.selectedSalary}}{{jobDetailInfo.totalSalary}}元</text>
+        </view>
     </view>
-  </view>
-  
-  <view class="section">
-    <view class="section-title">岗位描述</view>
-    <view class="content">
-      <text>{{jobDetailInfo.jobDescription}}</text>
+    <view class="section">
+        <view class="section-title">联系方式</view>
+        <view class="content">
+            <text>联系人：{{jobDetailInfo.familyName}}</text>
+            <text>电话：{{jobDetailInfo.mobilePhone}}</text>
+        </view>
     </view>
-  </view>
-  
-  <view class="section">
-    <view class="section-title">联系电话</view>
-    <view class="content">
-      <text>{{jobDetailInfo.mobilePhone}}</text>
+    <view class="section">
+        <view class="section-title">岗位描述</view>
+        <view class="content">
+            <text>{{jobDetailInfo.jobDescription}}</text>
+        </view>
     </view>
-  </view>
     <view class="date">发布时间：{{formattedDate}}</view>
-  
-  <button bindtap="makePhoneCall">立即联系</button>
+
+    <button bindtap="makePhoneCall">立即联系</button>
 </view>

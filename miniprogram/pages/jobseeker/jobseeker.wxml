@@ -18,7 +18,7 @@
             <swiper-item wx:for="{{jobLists}}" wx:key="index">
                 <view class="item">
                     <view class="list-item" wx:for="{{jobLists[index]}}" wx:key="id" data-id="{{item.id}}" bind:tap="getResumeDetails">
-                        <view class="item-title">{{item.title === '水手水手' ? '水手' : item.title}}</view>
+                        <view class="item-title">{{item.familyName}}</view>
                         <view class="item-content">
                             <text> 薪资:{{item.salary}}元 </text>
                             <text> 性别:{{item.selectedGender}}</text>

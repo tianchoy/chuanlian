@@ -22,6 +22,7 @@ Page({
         amount: '',
         skill: '',
         mobilePhone: '',
+        familyName:'',
         charCount: 0,
         maxLength: 50,
         openid: '',
@@ -77,6 +78,7 @@ Page({
                     selectedSalary: res.data[0].selectedSalary,
                     amount: res.data[0].amount,
                     mobilePhone: res.data[0].mobilePhone,
+                    familyName:res.data[0].familyName,
                     skill: res.data[0].skill,
                 });
             },
@@ -157,10 +159,14 @@ Page({
         const value = e.detail.value;
         this.setData({
             charCount: value.length,
-            skill: e.detail.value,
+            skill: value,
         });
     },
-
+    //处理用户名
+    handleFamilyNameChange(e){
+        console.log(e.detail.value)
+        this.setData({familyName:e.detail.value})
+    },
     // 处理电话号码
     bindMobilePhone(e) {
         const phoneNumber = e.detail.value;
@@ -205,6 +211,7 @@ Page({
             amount,
             skill,
             mobilePhone,
+            familyName
         } = this.data;
 
         // 特殊处理水手岗位
@@ -307,6 +314,15 @@ Page({
             return;
         }
 
+        if(!familyName){
+            wx.showToast({
+              title: '请输入姓名',
+              icon:'none'
+            })
+            this.setData({isSubmitting:false})
+            return
+        }
+
         if (!mobilePhone) {
             wx.hideLoading();
             wx.showToast({
@@ -338,6 +354,7 @@ Page({
             location,
             skill,
             mobilePhone,
+            familyName,
             resumesStatus: '0',
         };
 

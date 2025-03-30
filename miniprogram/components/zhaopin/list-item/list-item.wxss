@@ -6,6 +6,9 @@
 }
 
 .title {
+    width: 95%;
+    display: flex;
+    justify-content: space-between;
     font-weight: bold;
     margin-bottom: 20rpx;
 }
@@ -21,3 +24,18 @@
     display: inline-block;
     margin-right: 30rpx;
 }
+
+.browse-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: #f0f9eb;
+    color: #67c23a;
+    padding: 2rpx 6rpx;
+    border-radius: 10rpx;
+    font-size: 18rpx;
+    margin-left: 10rpx;
+  }
+  
+  .browse-badge icon {
+    margin-right: 3rpx;
+  }

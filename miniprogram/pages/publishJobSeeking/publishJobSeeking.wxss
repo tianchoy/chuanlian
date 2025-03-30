@@ -8,52 +8,65 @@
     width: 100%;
     margin-bottom: 20px;
 }
-.title{
+
+.title {
     width: 100%;
     font-weight: bolder;
     margin-bottom: 20rpx;
     font-size: 35rpx;
 }
+
 .section-title {
     width: 100%;
     display: inline-block;
     font-weight: bold;
     margin-bottom: 20px;
 }
+
 .input {
-    display: block;
-    float: left;
-    width: 40%;
+    width: 39%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    margin-right: 20rpx;
     text-align: center;
 }
-.single{
-    width: 90%;
-}
-.picker-box{
+
+.single {
     width: 100%;
-    overflow: hidden;
 }
-.picker-item{
-    width: 50%;
-    float: left;
+
+.picker-box {
+    display: flex;
+    justify-content: space-between;
+}
+
+.picker-item {
+    width: 45%;
     text-align: center;
 }
+
 .picker {
     margin-bottom: 10px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
+.input-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.skill-box{
+    display: flex;
+}
+
 textarea {
+    width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-bottom: 10px;
-    width: 90%;
 }
 
 button {
