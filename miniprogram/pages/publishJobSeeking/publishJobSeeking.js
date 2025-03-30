@@ -1,5 +1,5 @@
+let timer = null;
 Page({
-
     /**
      * 页面的初始数据
      */
@@ -169,15 +169,18 @@ Page({
     },
     // 处理电话号码
     bindMobilePhone(e) {
-        const phoneNumber = e.detail.value;
-        if (!this.validatePhoneNumber(phoneNumber)) {
-            wx.showToast({
-                title: '请输入有效的手机号码',
-                icon: 'none',
-            });
-            return;
-        }
-        this.setData({ mobilePhone: phoneNumber });
+        const phoneNo = e.detail.value
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            if (!this.validatePhoneNumber(phoneNo)) {
+                wx.showToast({
+                    title: '请输入有效的手机号码',
+                    icon: 'none'
+                });
+                return;
+            }
+        }, 1000);
+        this.setData({ mobilePhone: phoneNo })
     },
 
     validatePhoneNumber: function (phoneNumber) {

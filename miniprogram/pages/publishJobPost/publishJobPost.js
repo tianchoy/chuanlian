@@ -1,5 +1,5 @@
+let timer = null;
 Page({
-
     /**
      * 页面的初始数据
      */
@@ -8,7 +8,7 @@ Page({
         isLoading: false,
         isSubmitting: false, // 新增字段，用于控制提交按钮的禁用状态
         categories: [
-            { name: '一类', items: ['船长', '轮机长', '大副', '大管轮', '二副','二管轮', '三副', '三管轮'] },
+            { name: '一类', items: ['船长', '轮机长', '大副', '大管轮', '二副', '二管轮', '三副', '三管轮'] },
             { name: '二类', items: ['船长', '驾驶员', '轮机长', '轮机员'] },
             { name: '三类', items: ['船长', '驾驶员', '轮机长', '轮机员'] },
             { name: '水手', items: ['水手'] }
@@ -29,7 +29,7 @@ Page({
         charCount: 0,
         maxLength: 50,
         id: '',
-        familyName:''
+        familyName: ''
     },
 
     /**
@@ -40,7 +40,7 @@ Page({
         console.log(options)
         const id = options.id
         const openid = this.data.openid
-        this.setData({id})
+        this.setData({ id })
         if (openid, id) {
             this.getJobInfo(openid, id)
         }
@@ -79,7 +79,7 @@ Page({
                     totalSalary: res.data[0].totalSalary,
                     mobilePhone: res.data[0].mobilePhone,
                     jobDescription: res.data[0].jobDescription,
-                    familyName:res.data[0].familyName
+                    familyName: res.data[0].familyName
                 })
             },
             fail: function (err) {
@@ -152,20 +152,23 @@ Page({
     },
 
     //处理用户名
-    handleFamilyNameChange(e){
-        this.setData({familyName:e.detail.value})
+    handleFamilyNameChange(e) {
+        this.setData({ familyName: e.detail.value })
     },
 
     //处理手机号码
     handlemobilePhoneChange(e) {
         const phoneNo = e.detail.value
-        if (!this.validatePhoneNumber(phoneNo)) {
-            wx.showToast({
-                title: '请输入有效的手机号码',
-                icon: 'none'
-            });
-            return;
-        }
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            if (!this.validatePhoneNumber(phoneNo)) {
+                wx.showToast({
+                    title: '请输入有效的手机号码',
+                    icon: 'none'
+                });
+                return;
+            }
+        }, 1000);
         this.setData({ mobilePhone: phoneNo })
     },
 
@@ -186,15 +189,16 @@ Page({
 
     // 处理提交
     handleSubmit() {
+        console.log(this.data.mobilePhone)
         wx.showLoading({
             title: '发布中',
         })
         if (this.data.isSubmitting) {
             return; // 如果正在提交中，直接返回，防止重复提交
         }
-    
+
         this.setData({ isSubmitting: true }); // 开始提交，锁定按钮
-    
+
         const {
             id,
             selectedJobCategory,
@@ -210,7 +214,7 @@ Page({
             openid,
             familyName
         } = this.data;
-    
+
         // 验证各个字段并给出具体提示
         if (!selectedJobCategory) {
             wx.showToast({
@@ -220,7 +224,7 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
         if (!selectedJobType && selectedJobCategory !== '水手') {
             wx.showToast({
                 title: '请选择具体岗位',
@@ -229,7 +233,7 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
         if (!routeFrom) {
             wx.showToast({
                 title: '请输入航线起点',
@@ -238,7 +242,7 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
         if (!routeTo) {
             wx.showToast({
                 title: '请输入航线终点',
@@ -247,7 +251,7 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
         if (!selectedDate) {
             wx.showToast({
                 title: '请选择上船时间',
@@ -256,7 +260,7 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
         if (!selectedLocation || selectedLocation.length === 0) {
             wx.showToast({
                 title: '请选择上船地点',
@@ -265,7 +269,7 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
         if (!selectedSalary) {
             wx.showToast({
                 title: '请选择薪资单位',
@@ -274,7 +278,7 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
         if (!totalSalary) {
             wx.showToast({
                 title: '请输入薪资金额',
@@ -283,7 +287,7 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
         if (!jobDescription) {
             wx.showToast({
                 title: '请输入岗位描述',
@@ -293,15 +297,15 @@ Page({
             return;
         }
 
-        if(!familyName){
+        if (!familyName) {
             wx.showToast({
-              title: '请输入姓名',
-              icon:'none'
+                title: '请输入姓名',
+                icon: 'none'
             })
-            this.setData({isSubmitting:false});
+            this.setData({ isSubmitting: false });
             return;
         }
-    
+
         if (!mobilePhone) {
             wx.showToast({
                 title: '请输入手机号码',
@@ -310,7 +314,7 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
         if (!this.validatePhoneNumber(mobilePhone)) {
             wx.showToast({
                 title: '请输入有效的手机号码',
@@ -319,7 +323,7 @@ Page({
             this.setData({ isSubmitting: false });
             return;
         }
-    
+
         // 提交逻辑
         wx.cloud.callFunction({
             name: 'addJob',

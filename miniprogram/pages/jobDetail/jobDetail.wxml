@@ -1,10 +1,11 @@
 <!--pages/jobDetail/jobDetail.wxml-->
 <view class="container">
     <view class="title">岗位详情<view wx:if="{{isBrowsed}}" class="browse-badge">
-        <icon type="success" size="14"></icon>
-        <text>已浏览</text>
-    </view></view>
-    
+            <icon type="success" size="14"></icon>
+            <text>已浏览</text>
+        </view>
+    </view>
+
     <view class="section">
         <view class="section-title">招聘岗位</view>
         <view class="content">

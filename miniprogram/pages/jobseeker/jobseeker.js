@@ -1,4 +1,6 @@
 // pages/jobseeker/jobseeker.js
+const app = getApp()
+import { trackBrowse, checkBrowsedStatus, BROWSE_TYPE } from '../../utils/browseTracker'
 Page({
 
     /**
@@ -30,6 +32,19 @@ Page({
             screenWidth: screenWidth
         });
         this.getResumesList()
+        app.on('resumeBrowsed', this.handleResumeBrowsed)
+    },
+    onUnload() {
+        app.off('resumeBrowsed', this.handleResumeBrowsed)
+    },
+    handleResumeBrowsed({ resumeId }) {
+        this.setData({
+            jobLists: this.data.jobLists.map(tabJobs =>
+                tabJobs.map(resume =>
+                    resume._id === resumeId ? { ...resume, isBrowsed: true } : resume
+                )
+            )
+        })
     },
     //如果用户没有登陆，则去用户中心登陆
     toLogin() {
@@ -50,30 +65,54 @@ Page({
         console.log('加载状态:', this.data.isLoading);
     },
     //获取求职信息列表
-    getResumesList() {
-        wx.cloud.callFunction({
-            name: 'getResumes',
-            data:{
-                types: '2'
-            },
-            success: res => {
-                console.log(res.result)
-                this.setData({
-                    tabs: res.result.tabs,
-                    jobLists: res.result.resumesLists
-                })
-                this.hideLoading()
-            },
+    async getResumesList() {
+        this.showLoading()
+        try {
+            const res = await wx.cloud.callFunction({
+                name: 'getResumes',
+                data: { types: '2' }
+            })
+            console.log(res.result.resumesLists)
+            let jobLists = res.result.resumesLists
+            if (this.data.isLogin) {
+                const allJobIds = jobLists.flat().map(job => job.id).filter(Boolean)
+                if (allJobIds.length > 0) {
+                    const browsedIds = await checkBrowsedStatus(allJobIds, BROWSE_TYPE.RESUME)
+                    jobLists = jobLists.map(tabJobs =>
+                        tabJobs.map(job => job ? {
+                            ...job,
+                            isBrowsed: browsedIds.includes(job.id)
+                        } : null).filter(Boolean)
+                    )
+                }
+            }
+
+            this.setData({
+                tabs: res.result.tabs,
+                jobLists
+            })
+            this.hideLoading()
+
             fail: err => {
                 console.error('获取失败', err)
                 this.hideLoading()
             }
-        })
+        } catch (err) {
+            console.error('获取岗位失败:', err)
+            wx.showToast({
+                title: '加载失败',
+                icon: 'none'
+            })
+        } finally {
+            this.hideLoading()
+        }
     },
     getResumeDetails(e) {
         this.showLoading()
-        console.log(e.currentTarget.dataset.id)
         const id = e.currentTarget.dataset.id
+        if (this.data.isLogin) {
+            trackBrowse(id, BROWSE_TYPE.RESUME)
+        }
         wx.navigateTo({
             url: '/pages/resumeDetail/resumeDetail?id=' + id,
         })

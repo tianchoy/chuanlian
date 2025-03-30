@@ -51,8 +51,8 @@ Page({
                 name: 'getJobs',
                 data: { types: '2' }
             })
-
             let jobLists = res.result.jobLists
+            console.log(jobLists)
             if (this.data.isLogin) {
                 const allJobIds = jobLists.flat().map(job => job.id).filter(Boolean)
                 if (allJobIds.length > 0) {

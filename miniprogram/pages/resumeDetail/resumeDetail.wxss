@@ -52,3 +52,17 @@ button {
     background-color: #007aff;
     color: white;
 }
+.browse-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: #f0f9eb;
+    color: #67c23a;
+    padding: 2rpx 6rpx;
+    border-radius: 10rpx;
+    font-size: 18rpx;
+    margin-left: 10rpx;
+  }
+  
+  .browse-badge icon {
+    margin-right: 3rpx;
+  }

@@ -1,6 +1,10 @@
 <!--pages/resumeDetail/resumeDetail.wxml-->
 <view class="container">
-    <view class="title">人才信息</view>
+    <view class="title">人才信息<view wx:if="{{isBrowsed}}" class="browse-badge">
+            <icon type="success" size="14"></icon>
+            <text>已浏览</text>
+        </view>
+    </view>
 
     <view class="section">
         <view class="section-title">证书岗位</view>
