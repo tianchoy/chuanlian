@@ -32,24 +32,32 @@ Page({
     //获取详情
     // 根据 ID 获取岗位详细信息
     getJobDetails(jobId) {
+        const userinfo = wx.getStorageSync('userinfo')
         wx.showLoading({
             title: '加载中……',
         })
-        const db = wx.cloud.database(); // 获取云数据库实例
-        db.collection('jobs').doc(jobId).get({
-            success: (res) => {
-                console.log(res.data)
-                wx.hideLoading()
-                this.setData({
-                    id: jobId,
-                    jobDetailInfo: res.data, // 将获取的数据存储到页面数据中
-                    formattedDate: formatDate(res.data.updatedAt)
-                });
-            },
-            fail: (err) => {
-                console.error('获取数据失败', err);
-            },
-        });
+        if (userinfo.isAdmin) {
+            const db = wx.cloud.database(); // 获取云数据库实例
+            db.collection('jobs').doc(jobId).get({
+                success: (res) => {
+                    console.log(res.data)
+                    wx.hideLoading()
+                    this.setData({
+                        id: jobId,
+                        jobDetailInfo: res.data, // 将获取的数据存储到页面数据中
+                        formattedDate: formatDate(res.data.updatedAt)
+                    });
+                },
+                fail: (err) => {
+                    console.error('获取数据失败', err);
+                },
+            });
+        } else {
+            wx.reLaunch({
+                url: '/pages/user-center/index',
+            })
+        }
+
     },
     //拨打联系电话
     makePhoneCall: function () {

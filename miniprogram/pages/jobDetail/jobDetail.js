@@ -1,6 +1,7 @@
 // pages/jobDetail/jobDetail.js
 const app = getApp()
 const { formatDate } = require('../../utils/formatDate.js');
+import { checkJobContactPermission } from '../../utils/permission';
 Page({
 
     /**
@@ -9,7 +10,8 @@ Page({
     data: {
         jobDetailInfo: {},
         formattedDate: '',
-        isBrowsed: false
+        isBrowsed: false,
+        hasPermission: false
     },
 
     /**
@@ -21,6 +23,7 @@ Page({
             this.getJobDetails(this.jobId); // 调用方法获取数据
             app.on('jobBrowsed', this.handleJobBrowsed);
         }
+        this.onTapViewJobContact()
     },
     //获取详情
     onUnload() {
@@ -28,10 +31,27 @@ Page({
         getApp().off('jobBrowsed', this.handleJobBrowsed);
     },
     handleJobBrowsed: function ({ jobId }) {
-        console.log(jobId, this.jobId)
         if (jobId === this.jobId) {
             this.setData({ isBrowsed: true });
         }
+    },
+    //检查是不是有查看联系方式的权限
+    async onTapViewJobContact() {
+        const userinfo = wx.getStorageSync('userinfo')
+        console.log(!!userinfo)
+        if (!!userinfo) {
+            const hasPermission = await checkJobContactPermission();
+            this.setData({ hasPermission })
+        }
+        else {
+            this.setData({ hasPermission: false })
+        }
+    },
+    toPublish() {
+        console.log('aaaa')
+        wx.reLaunch({
+            url: '/pages/post/index',
+        })
     },
     // 根据 ID 获取岗位详细信息
     getJobDetails(jobId) {

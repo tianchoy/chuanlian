@@ -1,5 +1,5 @@
 <view class="container">
-    <view class="empty-status" wx:if="{{!openid}}">请登陆后查看</view>
+    <view class="empty-status" wx:if="{{!openid}}">请先登陆</view>
     <view wx:else class="list-box">
         <view class="list-item" wx:for="{{jobLists[0]}}" wx:key="index">
             <view wx:for="{{item}}" wx:key="index">

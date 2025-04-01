@@ -32,21 +32,28 @@ Page({
 
     //获取人才信息
     getResumeDetails(resumeId) {
-        console.log(resumeId)
-        const db = wx.cloud.database(); // 获取云数据库实例
-        db.collection('resumes').doc(resumeId).get({
-            success: (res) => {
-                console.log(res.data)
-                this.setData({
-                    id: resumeId,
-                    resumes: res.data, // 将获取的数据存储到页面数据中
-                    formattedDate: formatDate(res.data.updatedAt)
-                });
-            },
-            fail: (err) => {
-                console.error('获取数据失败', err);
-            },
-        });
+        const userinfo = wx.getStorageSync('userinfo')
+        if (userinfo.isAdmin) {
+            const db = wx.cloud.database(); // 获取云数据库实例
+            db.collection('resumes').doc(resumeId).get({
+                success: (res) => {
+                    console.log(res.data)
+                    this.setData({
+                        id: resumeId,
+                        resumes: res.data, // 将获取的数据存储到页面数据中
+                        formattedDate: formatDate(res.data.updatedAt)
+                    });
+                },
+                fail: (err) => {
+                    console.error('获取数据失败', err);
+                },
+            });
+        } else {
+            wx.reLaunch({
+                url: '/pages/user-center/index',
+            })
+        }
+
     },
     accept() {
         this.changeStatus('审核中……', '2')

@@ -16,26 +16,34 @@ Page({
     },
     getjobs() {
         this.showLoading()
-        wx.cloud.callFunction({
-            name: 'getJobs',
-            data: {
-                types: '0'
-            },
-            success: res => {
-                console.log(res.result.jobLists)
-                this.setData({
-                    jobLists: res.result.jobLists
-                })
-                this.hideLoading()
-            },
-            fail: err => {
-                console.error('获取失败', err)
-            }
-        })
+        const userinfo = wx.getStorageSync('userinfo')
+        if (userinfo.isAdmin) {
+            wx.cloud.callFunction({
+                name: 'getJobs',
+                data: {
+                    types: '0'
+                },
+                success: res => {
+                    console.log(res.result.jobLists)
+                    this.setData({
+                        jobLists: res.result.jobLists
+                    })
+                    this.hideLoading()
+                },
+                fail: err => {
+                    console.error('获取失败', err)
+                }
+            })
+        }else{
+            wx.reLaunch({
+              url: '/pages/user-center/index',
+            })
+        }
+
     },
     viewInfo(e) {
         const id = e.target.dataset.id
-        console.log('jobid:',id)
+        console.log('jobid:', id)
         wx.setStorageSync('adminJobId', id);
         wx.navigateTo({
             url: '../jobDetail/jobDetail?id=' + id,

@@ -62,3 +62,6 @@ button {
   .browse-badge icon {
     margin-right: 3px;
   }
+  .red{
+      color: red;
+  }

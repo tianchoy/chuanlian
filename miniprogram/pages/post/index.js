@@ -12,9 +12,10 @@ Page({
         this.showLoading()
         // 页面创建时执行
         this.getUserId()
-        console.log('onload', !!this.data.openid)
         if (this.data.isLogin) {
             this.getJobsList()
+        }else{
+            this.hideLoading()
         }
     },
     // 获取数据列表

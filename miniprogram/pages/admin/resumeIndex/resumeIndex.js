@@ -17,23 +17,31 @@ Page({
     },
     //获取求职信息列表
     getResumesList() {
-        wx.cloud.callFunction({
-            name: 'getResumes',
-            data:{
-                types:'0'
-            },
-            success: res => {
-                console.log(res.result.resumesLists)
-                this.setData({
-                    jobLists: res.result.resumesLists
-                })
-                this.hideLoading()
-            },
-            fail: err => {
-                console.error('获取失败', err)
-                this.hideLoading()
-            }
-        })
+        const userinfo = wx.getStorageSync('userinfo')
+        if(userinfo.isAdmin){
+            wx.cloud.callFunction({
+                name: 'getResumes',
+                data:{
+                    types:'0'
+                },
+                success: res => {
+                    console.log(res.result.resumesLists)
+                    this.setData({
+                        jobLists: res.result.resumesLists
+                    })
+                    this.hideLoading()
+                },
+                fail: err => {
+                    console.error('获取失败', err)
+                    this.hideLoading()
+                }
+            })
+        }else{
+            wx.reLaunch({
+                url: '/pages/user-center/index',
+              })
+        }
+        
     },
     getResumeDetails(e) {
         this.showLoading()

@@ -32,7 +32,10 @@
         <view class="section-title">联系方式</view>
         <view class="content">
             <text>联系人：{{jobDetailInfo.familyName}}</text>
-            <text>电话：{{jobDetailInfo.mobilePhone}}</text>
+            <text>
+                <text wx:if="{{hasPermission}}">电话：{{jobDetailInfo.mobilePhone}}</text>
+                <text class="red" wx:else>电话：请先发布简历</text>
+            </text>
         </view>
     </view>
     <view class="section">
@@ -42,6 +45,6 @@
         </view>
     </view>
     <view class="date">发布时间：{{formattedDate}}</view>
-
-    <button bindtap="makePhoneCall">立即联系</button>
+    <button wx:if="{{hasPermission}}" bindtap="makePhoneCall">立即联系</button>
+    <button wx:else bind:tap="toPublish">去发布</button>
 </view>

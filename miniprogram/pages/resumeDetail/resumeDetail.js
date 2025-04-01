@@ -1,6 +1,7 @@
 // pages/resumeDetail/resumeDetail.js
 const app = getApp()
 const { formatDate } = require('../../utils/formatDate.js');
+import { checkResumeContactPermission } from '../../utils/permission';
 Page({
 
     /**
@@ -8,8 +9,9 @@ Page({
      */
     data: {
         resumes: {},
-        formattedDate:'',
-        isBrowsed:false
+        formattedDate: '',
+        isBrowsed: false,
+        hasPermission: false
     },
 
     /**
@@ -21,21 +23,36 @@ Page({
             this.getResumeDetails(this.resumeId); // 调用方法获取数据
             app.on('resumeBrowsed', this.handleResumeBrowsed)
         }
+        this.onTapViewResumeContact()
     },
     onUnload() {
         app.off('resumeBrowsed', this.handleResumeBrowsed)
     },
 
-    handleResumeBrowsed: function({ resumeId }) {
-        console.log(resumeId,this.resumeId)
-      if (resumeId === this.resumeId) {
-        this.setData({ isBrowsed: true });
-      }
-    },  
-
+    handleResumeBrowsed: function ({ resumeId }) {
+        console.log(resumeId, this.resumeId)
+        if (resumeId === this.resumeId) {
+            this.setData({ isBrowsed: true });
+        }
+    },
+    //检测一下有没有权限查看联系方式
+    async onTapViewResumeContact() {
+        const userinfo = wx.getStorageSync('userinfo')
+        if (!!userinfo) {
+            const hasPermission = await checkResumeContactPermission();
+            this.setData({ hasPermission })
+        }
+        else {
+            this.setData({ hasPermission: false })
+        }
+    },
+    toPublish() {
+        wx.reLaunch({
+            url: '/pages/post/index',
+        })
+    },
     //获取人才信息
     getResumeDetails(resumeId) {
-        console.log(resumeId)
         const db = wx.cloud.database(); // 获取云数据库实例
         db.collection('resumes').doc(resumeId).get({
             success: (res) => {
@@ -43,7 +60,7 @@ Page({
                 this.sendBrowse(resumeId)
                 this.setData({
                     resumes: res.data, // 将获取的数据存储到页面数据中
-                    formattedDate:formatDate(res.data.updatedAt)
+                    formattedDate: formatDate(res.data.updatedAt)
                 });
             },
             fail: (err) => {
@@ -52,26 +69,26 @@ Page({
         });
     },
 
-     //记录浏览行为
-     async sendBrowse(resumeId) {
+    //记录浏览行为
+    async sendBrowse(resumeId) {
         try {
             // 1. 检查文档是否存在
             const resumeDoc = await wx.cloud.database().collection('resumes')
                 .doc(resumeId)
                 .field({ _id: true })
                 .get()
-            
+
             if (!resumeDoc.data) {
                 console.error('职位文档不存在:', resumeId)
                 return { success: false, error: 'DOCUMENT_NOT_FOUND' }
             }
-    
+
             // 2. 获取当前用户ID
             const userInfo = wx.getStorageSync('userinfo') || app.globalData.userInfo
             if (!userInfo || !userInfo._id) {
                 return { success: false, error: 'USER_NOT_LOGIN' }
             }
-    
+
             // 3. 调用云函数记录浏览
             const res = await wx.cloud.callFunction({
                 name: 'addBrowseRecord',
@@ -98,7 +115,7 @@ Page({
     },
 
     //拨打电话
-    makePhoneCall(){
+    makePhoneCall() {
         const phone = this.data.resumes.mobilePhone
         wx.makePhoneCall({
             phoneNumber: phone
