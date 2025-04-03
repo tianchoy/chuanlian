@@ -1,12 +1,12 @@
-<!--pages/recruiter/recruiter.wxml-->
+<!--pages/jobseeker/jobseeker.wxml-->
 <view class="container">
-    <!-- 如果 jobLists 为空，显示“暂无更多数据” -->
-    <view wx:if="{{jobLists.length === 0}}" class="empty-container">
-        <text class="empty-text">暂无更多数据</text>
+    <!-- 如果 jobLists 为空，显示"暂无更多数据" -->
+    <view wx:if="{{tabs.length === 0}}" class="empty-container">
+        <view class="empty-text">暂无更多数据</view>
     </view>
 
     <!-- 如果 jobLists 不为空，展示数据 -->
-    <view class="list-content" wx:else>
+    <view class="jobList-content" wx:else>
         <!-- 顶部选项卡 -->
         <scroll-view scroll-x="true" class="tabs" scroll-with-animation scroll-left="{{scrollLeft}}">
             <view wx:for="{{tabs}}" wx:key="index" class="tab {{currentTab === index ? 'active' : ''}}" bindtap="switchTab" data-index="{{index}}">
@@ -15,26 +15,55 @@
         </scroll-view>
         <!-- 内容区域 -->
         <swiper class="content" current="{{currentTab}}" duration="300" bindchange="swiperChange" style="height: {{swiperHeight}}px;">
-            <swiper-item wx:for="{{jobLists}}" wx:key="index">
-                <view class="item">
-                    <view class="list-item" wx:for="{{jobLists[index]}}" wx:key="id" data-id="{{item.id}}" bind:tap="getResumeDetails">
-                        <view class="item-title">
-                            <view>{{item.familyName}}</view>
-                            <view wx:if="{{item.isBrowsed}}" class="browse-badge">
-                                <icon type="success" size="14"></icon>
-                                <text>已浏览</text>
+            <swiper-item wx:for="{{tabs}}" wx:key="index" class="swiper-item">
+                <!-- 每个分类使用独立的scroll-view -->
+                <scroll-view 
+                scroll-y 
+                enhanced 
+                show-scrollbar="{{false}}" 
+                bindscrolltolower="loadMore" 
+                style="height: 100%;" 
+                data-category="{{item.name}}"
+                >
+                    <view class="job-list">
+                        <block wx:for="{{resumesLists[item.name] || []}}" wx:key="_id">
+                            <view class="list-item" bindtap="getResumeDetails" data-id="{{item.id}}">
+                                <view class="item-title">
+                                    <view>{{item.familyName}}</view>
+                                    <view wx:if="{{item.isBrowsed}}" class="browse-badge">
+                                        <icon type="success" size="14"></icon>
+                                        <text>已浏览</text>
+                                    </view>
+                                </view>
+                                <view class="item-content">
+                                    <text>{{item.salary}}元</text>
+                                    <text>性别: {{item.selectedGender}}</text>
+                                    <text>年龄: {{item.age}}</text>
+                                </view>
+                            </view>
+                        </block>
+
+                        <!-- 加载状态提示 -->
+                        <view class="load-more-footer">
+                            <view wx:if="{{loadingMore && currentTab === index}}">
+                                <text>加载中...</text>
+                            </view>
+                            <view wx:elif="{{hasMoreData[item.name]}}">
+                                <text>上滑加载更多</text>
+                            </view>
+                            <view wx:else>
+                                <text>已经到底了</text>
                             </view>
                         </view>
-                        <view class="item-content">
-                            <text> 薪资:{{item.salary}}元 </text>
-                            <text> 性别:{{item.selectedGender}}</text>
-                            <text> 年龄:{{item.age}} </text>
-                        </view>
                     </view>
-                </view>
+                </scroll-view>
             </swiper-item>
         </swiper>
     </view>
-    <!--  未登陆的情况下，展示  -->
+    <!-- 未登陆的情况下，展示 -->
     <isLogin isLogin="{{!isLogin}}" bind:toLogin="toLogin" />
 </view>
+
+
+
+

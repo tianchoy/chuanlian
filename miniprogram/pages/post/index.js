@@ -3,7 +3,7 @@ Page({
     data: {
         isLogin: false,
         isLoading: false,
-        status: ['审核中', '未过审', '已审核', '已下线'],
+        status: ['审核中', '未过审', '已上线', '已下线'],
         jobLists: [],
         openid: ''
     },

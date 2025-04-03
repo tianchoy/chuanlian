@@ -4,16 +4,18 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 exports.main = async (event, context) => {
     const db = cloud.database()
-    const res = await db.collection('jobs').orderBy('updatedAt', 'desc').get()
-    const { types } = event
+    const { types, pageSize = 5, currentPage = 1, categoryTitles = [] } = event
     
-    // 1. 过滤出符合条件的职位
-    const filteredData = res.data.filter(item => item.jobStatus === types)
+    // 1. 获取所有符合条件的职位
+    const res = await db.collection('jobs')
+        .where({ jobStatus: types })
+        .orderBy('updatedAt', 'desc')
+        .get()
     
     // 2. 按职位类别分组
     const groupedData = {}
     
-    filteredData.forEach(item => {
+    res.data.forEach(item => {
         const title = `${item.selectedJobCategory}${item.selectedJobType}`
         
         if (!groupedData[title]) {
@@ -29,7 +31,7 @@ exports.main = async (event, context) => {
             route: `${item.routeFrom}~${item.routeTo}`,
             date: item.selectedDate,
             selectedLocation: item.selectedLocation,
-            familyName:item.familyName,
+            familyName: item.familyName,
             id: item._id
         })
     })
@@ -40,12 +42,23 @@ exports.main = async (event, context) => {
         tag: groupedData[title].tag
     }))
     
-    const jobLists = Object.keys(groupedData).map(title => 
-        groupedData[title].jobs
-    )
+    // 4. 处理分页数据
+    const jobLists = {}
+    const hasMoreData = {}
+    
+    Object.keys(groupedData).forEach(title => {
+        const allJobs = groupedData[title].jobs
+        const page = categoryTitles.includes(title) ? currentPage : 1
+        const startIndex = (page - 1) * pageSize
+        const endIndex = startIndex + pageSize
+        
+        jobLists[title] = allJobs.slice(0, endIndex)
+        hasMoreData[title] = endIndex < allJobs.length
+    })
     
     return {
         tabs: tabs,
-        jobLists: jobLists
+        jobLists: jobLists,
+        hasMoreData: hasMoreData
     }
 }

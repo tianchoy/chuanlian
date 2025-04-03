@@ -39,7 +39,6 @@ Component({
         wx.reLaunch({
           url: path,
           success: () => {
-              console.log('success')
             this.setData({ activeIndex: index })
           }
         })

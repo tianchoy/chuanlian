@@ -49,3 +49,40 @@
     width: 100%;
     background-color: #fff;
   }
+/* 加载更多底部区域样式 */
+.load-more-footer {
+    padding: 15px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #999;
+    font-size: 14px;
+}
+
+.no-more {
+    text-align: center;
+    padding: 15px 0;
+    color: #999;
+    font-size: 12px;
+}
+
+.loading-more {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    color: #999;
+    font-size: 12px;
+}
+.swiper-item {
+    overflow: hidden;
+}
+
+.job-list {
+    min-height: 101%; /* 确保能触发滚动 */
+}
+
+scroll-view {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* iOS流畅滚动 */
+}

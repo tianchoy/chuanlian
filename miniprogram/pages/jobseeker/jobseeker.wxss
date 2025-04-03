@@ -17,10 +17,13 @@
 
 /* 暂无更多数据样式 */
 .empty-text {
+    flex:1;
     color: #999;
     font-size: 14px;
 }
-  
+  .jobList-content{
+      width: 100%;
+  }
   /* 顶部选项卡样式 */
   .tabs {
     white-space: nowrap; /* 禁止换行 */
@@ -46,28 +49,32 @@
     width: 100%;
     background-color: #fff;
   }
-.list-content{
-    width: 100%;
+  .list-item {
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #fff;
+    border-bottom: 1rpx solid #f6f6f6;
 }
-.list-item {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
+
 .item-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
     font-weight: bold;
-    margin-bottom: 20rpx;
 }
 
 .item-content {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 13px;
     color: #666;
-    font-size: 28rpx;
 }
 
-.item-content text {
-    display: inline-block;
-    margin-right: 30rpx;
+.item-footer {
+    font-size: 12px;
+    color: #999;
 }
 
 .browse-badge {
@@ -75,12 +82,48 @@
     align-items: center;
     background-color: #f0f9eb;
     color: #67c23a;
-    padding: 2rpx 6rpx;
-    border-radius: 10rpx;
-    font-size: 18rpx;
-    margin-left: 10rpx;
-  }
-  
-  .browse-badge icon {
-    margin-right: 3rpx;
-  }
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.browse-badge icon {
+    margin-right: 3px;
+}
+/* 加载更多底部区域样式 */
+.load-more-footer {
+    padding: 15px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #999;
+    font-size: 14px;
+}
+
+.no-more {
+    text-align: center;
+    padding: 15px 0;
+    color: #999;
+    font-size: 12px;
+}
+
+.loading-more {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    color: #999;
+    font-size: 12px;
+}
+.swiper-item {
+    overflow: hidden;
+}
+
+.job-list {
+    min-height: 101%; /* 确保能触发滚动 */
+}
+
+scroll-view {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* iOS流畅滚动 */
+}
