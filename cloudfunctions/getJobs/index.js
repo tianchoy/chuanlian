@@ -4,11 +4,26 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 exports.main = async (event, context) => {
     const db = cloud.database()
-    const { types, pageSize = 5, currentPage = 1, categoryTitles = [] } = event
+    const { 
+        types, 
+        pageSize = 5, 
+        currentPage = 1, 
+        categoryTitles = [], 
+        filterLocation = '' 
+    } = event
+    
+    // 构建查询条件
+    const queryCondition = { jobStatus: types }
+    if (filterLocation) {
+        queryCondition.selectedLocation = db.RegExp({
+            regexp: filterLocation,
+            options: 'i'
+        })
+    }
     
     // 1. 获取所有符合条件的职位
     const res = await db.collection('jobs')
-        .where({ jobStatus: types })
+        .where(queryCondition)
         .orderBy('updatedAt', 'desc')
         .get()
     
@@ -57,7 +72,7 @@ exports.main = async (event, context) => {
     })
     
     return {
-        tabs: tabs,
+        tabs: tabs, // 始终保持分类结构
         jobLists: jobLists,
         hasMoreData: hasMoreData
     }

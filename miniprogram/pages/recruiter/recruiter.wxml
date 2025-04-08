@@ -1,5 +1,26 @@
 <!--pages/recruiter/recruiter.wxml-->
 <view class="container">
+    <!-- 筛选面板 -->
+    <view wx:if="{{showFilter}}" class="filter-panel">
+        <view class="filter-mask" catchtap="toggleFilter"></view>
+        <view class="filter-content">
+            <view class="filter-header">
+                <text>筛选条件</text>
+                <icon type="cancel" size="20" bindtap="toggleFilter"></icon>
+            </view>
+            <view class="filter-body">
+                <view class="filter-item">
+                    <text class="filter-label">工作地点</text>
+                    <input class="filter-input" placeholder="请输入工作地点" value="{{filterLocation}}" bindinput="onFilterInput" />
+                </view>
+            </view>
+            <view class="filter-footer">
+                <view class="btn cancel" bindtap="toggleFilter">取消</view>
+                <view class="btn confirm" bindtap="applyFilter">确定</view>
+            </view>
+        </view>
+    </view>
+
     <!-- 如果 jobLists 为空，显示"暂无更多数据" -->
     <view wx:if="{{tabs.length === 0}}" class="empty-container">
         <view class="empty-text">暂无更多数据</view>
@@ -13,25 +34,35 @@
                 <text>{{item.name === '水手水手' ? '水手' : item.name}}</text>
             </view>
         </scroll-view>
+        <!-- 筛选按钮 -->
+        <view class="filter-container">
+            <view class="filter-btn" bindtap="toggleFilter">
+                <text>筛选</text>
+                <image src="/images/filter.png" mode="aspectFit"></image>
+            </view>
+        </view>
         <!-- 内容区域 -->
         <swiper class="content" current="{{currentTab}}" duration="300" bindchange="swiperChange" style="height: {{swiperHeight}}px;">
             <swiper-item wx:for="{{tabs}}" wx:key="index" class="swiper-item">
                 <!-- 每个分类使用独立的scroll-view -->
-                <scroll-view 
-                scroll-y 
-                enhanced 
-                show-scrollbar="{{false}}" 
-                bindscrolltolower="loadMore" 
-                style="height: 100%;" 
-                data-category="{{item.name}}"
-                >
+                <scroll-view scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="loadMore" style="height: 100%;" data-category="{{item.name}}">
                     <view class="job-list">
+                        <!-- 筛选条件显示 -->
+                        <view wx:if="{{isFiltering}}" class="filter-tag">
+                            <text>筛选地点: "{{filterLocation}}"</text>
+                            <view class="clear-btn" bindtap="clearFilter">清除</view>
+                        </view>
+                        <!-- 内容为空时显示 -->
+                        <view wx:if="{{!(jobLists[item.name] && jobLists[item.name].length)}}" class="empty-text-search">
+                            <text>暂无数据</text>
+                        </view>
+
                         <block wx:for="{{jobLists[item.name] || []}}" wx:key="id">
-                            <list-item item="{{item}}" bind:tap="toDetail" />
+                            <list-item item="{{item}}" bind:tap="toDetail" data-id="{{item.id}}" />
                         </block>
 
                         <!-- 加载状态提示 -->
-                        <view class="load-more-footer">
+                        <view class="load-more-footer" wx:if="{{!(!(jobLists[item.name] && jobLists[item.name].length))}}">
                             <view wx:if="{{loadingMore && currentTab === index}}">
                                 <text>加载中...</text>
                             </view>

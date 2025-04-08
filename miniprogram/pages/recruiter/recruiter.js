@@ -16,7 +16,10 @@ Page({
         pageSize: 1,
         currentPages: {}, // 记录各分类当前页码
         hasMoreData: {}, // 记录各分类是否还有更多数据
-        loadingMore: false // 是否正在加载更多
+        loadingMore: false, // 是否正在加载更多
+        showFilter: false, // 是否显示筛选面板
+        filterLocation: '', // 筛选地点
+        isFiltering: false // 是否正在筛选状态
     },
 
     onLoad() {
@@ -24,11 +27,21 @@ Page({
         this.getUserId()
         this.getJobs(true)
         app.on('jobBrowsed', this.handleJobBrowsed)
+
+        // 获取屏幕宽度
+        wx.getSystemInfo({
+            success: (res) => {
+                this.setData({
+                    screenWidth: res.windowWidth
+                })
+            }
+        })
     },
 
     onUnload() {
         app.off('jobBrowsed', this.handleJobBrowsed)
     },
+
     // 调整高度计算
     initPage() {
         const { windowHeight, statusBarHeight } = wx.getSystemInfoSync();
@@ -50,6 +63,54 @@ Page({
         })
     },
 
+    // 切换筛选面板显示状态
+    toggleFilter() {
+        this.setData({
+            showFilter: !this.data.showFilter
+        })
+    },
+
+    // 输入框变化事件
+    onFilterInput(e) {
+        this.setData({
+            filterLocation: e.detail.value
+        })
+    },
+
+    // 应用筛选
+    applyFilter() {
+        if (this.data.filterLocation.trim() === '') {
+            wx.showToast({
+                title: '请输入筛选地点',
+                icon: 'none'
+            })
+            return
+        }
+
+        this.setData({
+            isFiltering: true,
+            showFilter: false,
+            currentPages: {}, // 重置页码
+            jobLists: {}, // 清空现有数据
+            hasMoreData: {} // 清空是否有更多数据状态
+        }, () => {
+            this.getJobs(true)
+        })
+    },
+
+    // 清除筛选
+    clearFilter() {
+        this.setData({
+            isFiltering: false,
+            filterLocation: '',
+            currentPages: {},
+            jobLists: {},
+            hasMoreData: {}
+        }, () => {
+            this.getJobs(true)
+        })
+    },
+
     async getJobs(initialLoad = false) {
         if (this.data.loadingMore && !initialLoad) return
 
@@ -66,26 +127,27 @@ Page({
                     types: '2',
                     currentPage: currentPage,
                     categoryTitles: initialLoad ? [] : [currentTabTitle],
-                    pageSize: this.data.pageSize
+                    pageSize: this.data.pageSize,
+                    filterLocation: this.data.isFiltering ? this.data.filterLocation : ''
                 }
             })
-
+            console.log(res.result)
             let newJobLists = initialLoad ? {} : { ...this.data.jobLists }
             let newCurrentPages = initialLoad ? {} : { ...this.data.currentPages }
             let newHasMoreData = initialLoad ? {} : { ...this.data.hasMoreData }
 
             if (initialLoad) {
-                // 初次加载
+                // 初次加载 - 更新所有数据
                 newJobLists = res.result.jobLists
                 Object.keys(newJobLists).forEach(title => {
                     newCurrentPages[title] = 1
                     newHasMoreData[title] = res.result.hasMoreData[title]
                 })
             } else if (currentTabTitle) {
-                // 加载更多
+                // 加载更多 - 只更新当前分类的数据
                 newJobLists[currentTabTitle] = res.result.jobLists[currentTabTitle] || []
                 newCurrentPages[currentTabTitle] = currentPage
-                newHasMoreData[currentTabTitle] = res.result.hasMoreData[currentTabTitle]
+                newHasMoreData[currentTabTitle] = res.result.hasMoreData[currentTabTitle]   
             }
 
             // 处理浏览状态
@@ -104,12 +166,11 @@ Page({
                     )
                 }
             }
-
             this.setData({
-                tabs: res.result.tabs,
                 jobLists: newJobLists,
                 currentPages: newCurrentPages,
-                hasMoreData: newHasMoreData
+                hasMoreData: newHasMoreData,
+                tabs: res.result.tabs.length > 0 ? res.result.tabs : this.data.tabs,  // 保留原有tabs
             })
         } catch (err) {
             console.error('获取岗位失败:', err)
@@ -130,13 +191,14 @@ Page({
     },
 
     toDetail(e) {
-        const id = e.currentTarget.dataset.id
-        if (!id) return
 
+        const id = e.currentTarget.dataset.id
+        console.log(e)
+        if (!id) return
         if (this.data.isLogin) {
             trackBrowse(id, BROWSE_TYPE.JOB)
         }
-
+        console.log(id)
         wx.navigateTo({
             url: `/pages/jobDetail/jobDetail?id=${id}`,
         })
@@ -181,22 +243,16 @@ Page({
         if (!this.data.isLogin) {
             this.getUserId()
         }
-        this.getJobs(true)
+        // this.getJobs(true)
     },
-    // 修改加载更多方法
+
     loadMore(e) {
         const category = e.currentTarget.dataset.category;
         if (this.data.hasMoreData[category] && !this.data.loadingMore) {
             this.getJobs();
         }
+    },
+    onTabItemTap(item) {
+        this.getJobs(true)
     }
-
-
-    // // 上拉加载更多
-    // onReachBottom() {
-    //     const currentTabTitle = this.data.tabs[this.data.currentTab]?.name
-    //     if (currentTabTitle && this.data.hasMoreData[currentTabTitle]) {
-    //         this.getJobs()
-    //     }
-    // }
 })

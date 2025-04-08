@@ -7,38 +7,49 @@ Page({
         isLogin: false,
         isLoading: false,
         tabs: [],
-        resumesLists: {}, // 改为对象形式存储各分类数据
+        resumesLists: {},
         currentTab: 0,
         scrollLeft: 0,
         swiperHeight: 0,
         tabWidth: 117,
         screenWidth: 0,
-        pageSize: 1, // 每页5条数据
-        currentPages: {}, // 记录各分类当前页码
-        hasMoreData: {}, // 记录各分类是否还有更多数据
-        loadingMore: false // 是否正在加载更多
+        pageSize: 1,
+        currentPages: {},
+        hasMoreData: {},
+        loadingMore: false,
+        activeFilters: {}, // 存储各分类的筛选条件
+        showFilterPopup: false, // 是否显示筛选弹窗
+        currentFilterTab: null, // 当前正在筛选的分类
+        tempFilterValue: '' // 临时存储筛选值
     },
 
     onLoad() {
         this.initPage()
         this.getUserId()
-        this.getResumes(true) // 初始加载
+        this.getResumes(true)
         app.on('resumeBrowsed', this.handleResumeBrowsed)
+        
+        // 获取屏幕宽度
+        wx.getSystemInfo({
+            success: (res) => {
+                this.setData({
+                    screenWidth: res.windowWidth
+                })
+            }
+        })
     },
 
     onUnload() {
         app.off('resumeBrowsed', this.handleResumeBrowsed)
     },
 
-    // 初始化页面高度
     initPage() {
         const { windowHeight, statusBarHeight } = wx.getSystemInfoSync();
         this.setData({
-            swiperHeight: windowHeight - 50 - statusBarHeight // 减去tab栏和状态栏高度
+            swiperHeight: windowHeight - 50 - statusBarHeight
         });
     },
 
-    // 处理简历浏览状态更新
     handleResumeBrowsed({ resumeId }) {
         this.setData({
             resumesLists: Object.fromEntries(
@@ -49,6 +60,72 @@ Page({
                     )
                 ])
             )
+        })
+    },
+
+    // 打开筛选弹窗
+    openFilterPopup(e) {
+        const tabName = this.data.tabs[this.data.currentTab]?.name
+        if (!tabName) return
+        
+        this.setData({
+            showFilterPopup: true,
+            currentFilterTab: tabName,
+            tempFilterValue: this.data.activeFilters[tabName]?.location || ''
+        })
+    },
+
+    // 关闭筛选弹窗
+    closeFilterPopup() {
+        this.setData({
+            showFilterPopup: false,
+            tempFilterValue: ''
+        })
+    },
+
+    // 输入筛选条件
+    onFilterInput(e) {
+        this.setData({
+            tempFilterValue: e.detail.value
+        })
+    },
+
+    // 应用筛选条件
+    applyFilter() {
+        const { currentFilterTab, tempFilterValue } = this.data
+        if (!currentFilterTab) return
+        
+        const newActiveFilters = {
+            ...this.data.activeFilters,
+            [currentFilterTab]: {
+                location: tempFilterValue.trim()
+            }
+        }
+        
+        this.setData({
+            activeFilters: newActiveFilters,
+            showFilterPopup: false
+        }, () => {
+            // 重新加载当前分类数据
+            this.getResumes(true)
+        })
+    },
+
+    // 重置筛选条件
+    resetFilter() {
+        const { currentFilterTab } = this.data
+        if (!currentFilterTab) return
+        
+        const newActiveFilters = { ...this.data.activeFilters }
+        delete newActiveFilters[currentFilterTab]
+        
+        this.setData({
+            activeFilters: newActiveFilters,
+            tempFilterValue: '',
+            showFilterPopup: false
+        }, () => {
+            // 重新加载当前分类数据
+            this.getResumes(true)
         })
     },
 
@@ -63,13 +140,17 @@ Page({
             const currentTabTitle = this.data.tabs[this.data.currentTab]?.name
             const currentPage = initialLoad ? 1 : (this.data.currentPages[currentTabTitle] || 1) + 1
 
+            // 获取当前分类的筛选条件
+            const filters = this.data.activeFilters[currentTabTitle] || {}
+
             const res = await wx.cloud.callFunction({
                 name: 'getResumes',
                 data: {
                     types: '2',
                     currentPage: currentPage,
                     categoryTitles: initialLoad ? [] : [currentTabTitle],
-                    pageSize: this.data.pageSize
+                    pageSize: this.data.pageSize,
+                    filters: filters // 添加筛选条件
                 }
             })
             console.log(res.result)
@@ -107,13 +188,13 @@ Page({
                     )
                 }
             }
-            console.log('tabs',res.result.tabs)
+
             this.setData({
-                tabs: res.result.tabs,
+                // tabs: res.result.tabs,
+                tabs: res.result.tabs.length > 0 ? res.result.tabs : this.data.tabs,  // 保留原有tabs
                 resumesLists: newResumesLists,
                 currentPages: newCurrentPages,
-                hasMoreData: newHasMoreData,
-                // loadingMore: false
+                hasMoreData: newHasMoreData
             })
 
         } catch (err) {
@@ -128,14 +209,12 @@ Page({
         }
     },
 
-    // 跳转登录
     toLogin() {
         wx.switchTab({
             url: '/pages/user-center/index',
         })
     },
 
-    // 获取用户ID
     getUserId() {
         const userinfo = wx.getStorageSync('userinfo')
         this.setData({
@@ -143,7 +222,6 @@ Page({
         })
     },
 
-    // 查看简历详情
     getResumeDetails(e) {
         const id = e.currentTarget.dataset.id
         if (!id) return
@@ -157,18 +235,6 @@ Page({
         })
     },
 
-    // 切换Tab
-    // switchTab(e) {
-    //     const index = e.currentTarget.dataset.index
-    //     this.setData({ currentTab: index }, () => {
-    //         this.adjustScrollPosition(index)
-    //         // 如果当前分类没有数据，则加载
-    //         const currentTabTitle = this.data.tabs[index]?.name
-    //         if (currentTabTitle && (!this.data.resumesLists[currentTabTitle] || this.data.resumesLists[currentTabTitle].length === 0)) {
-    //             this.getResumes(true)
-    //         }
-    //     })
-    // },
     switchTab(e) {
         const index = e.currentTarget.dataset.index
         this.setData({ currentTab: index }, () => {
@@ -176,18 +242,6 @@ Page({
         })
     },
 
-    // Swiper切换
-    // swiperChange(e) {
-    //     const index = e.detail.current
-    //     this.setData({ currentTab: index }, () => {
-    //         this.adjustScrollPosition(index)
-    //         // 如果当前分类没有数据，则加载
-    //         const currentTabTitle = this.data.tabs[index]?.name
-    //         if (currentTabTitle && (!this.data.resumesLists[currentTabTitle] || this.data.resumesLists[currentTabTitle].length === 0)) {
-    //             this.getResumes(true)
-    //         }
-    //     })
-    // },
     swiperChange(e) {
         const index = e.detail.current
         this.setData({ currentTab: index }, () => {
@@ -195,10 +249,9 @@ Page({
         })
     },
 
-    // 调整滚动位置
     adjustScrollPosition(index) {
         const { tabWidth, screenWidth } = this.data;
-        const halfScreenWidth = screenWidth / 2; // 屏幕宽度的一半
+        const halfScreenWidth = screenWidth / 2;
         const scrollLeft = index * tabWidth - halfScreenWidth + tabWidth / 2;
 
         this.setData({
@@ -206,7 +259,6 @@ Page({
         });
     },
 
-    // 上拉加载更多
     loadMore(e) {
         const category = e.currentTarget.dataset.category;
         if (this.data.hasMoreData[category] && !this.data.loadingMore) {

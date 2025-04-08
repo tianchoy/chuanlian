@@ -4,11 +4,22 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 exports.main = async (event, context) => {
     const db = cloud.database()
-    const { types, pageSize = 5, currentPage = 1, categoryTitles = [] } = event
+    const { types, pageSize = 5, currentPage = 1, categoryTitles = [], filters = {} } = event
+    
+    // 构建查询条件
+    const queryCondition = { resumesStatus: types }
+    
+    // 添加location筛选条件
+    if (filters.location) {
+        queryCondition.location = db.RegExp({
+            regexp: filters.location,
+            options: 'i' // 不区分大小写
+        })
+    }
     
     // 1. 获取所有符合条件的简历
     const res = await db.collection('resumes')
-        .where({ resumesStatus: types })
+        .where(queryCondition)
         .orderBy('updatedAt', 'desc')
         .get()
     
@@ -28,7 +39,7 @@ exports.main = async (event, context) => {
         groupedData[title].resumes.push({
             title: title,
             salary: `${item.selectedSalary}${item.amount}`,
-            selectedLocation: item.selectedLocation,
+            location: item.location,
             age: item.age,
             familyName: item.familyName,
             selectedGender: item.selectedGender,
@@ -41,7 +52,7 @@ exports.main = async (event, context) => {
     const tabs = Object.keys(groupedData).map(title => ({
         name: title,
         tag: groupedData[title].tag,
-        count: groupedData[title].resumes.length // 新增总数统计
+        count: groupedData[title].resumes.length
     }))
     
     // 4. 处理分页数据

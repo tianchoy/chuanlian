@@ -4,28 +4,37 @@
     <view wx:if="{{tabs.length === 0}}" class="empty-container">
         <view class="empty-text">暂无更多数据</view>
     </view>
-
     <!-- 如果 jobLists 不为空，展示数据 -->
     <view class="jobList-content" wx:else>
         <!-- 顶部选项卡 -->
         <scroll-view scroll-x="true" class="tabs" scroll-with-animation scroll-left="{{scrollLeft}}">
             <view wx:for="{{tabs}}" wx:key="index" class="tab {{currentTab === index ? 'active' : ''}}" bindtap="switchTab" data-index="{{index}}">
                 <text>{{item.name === '水手水手' ? '水手' : item.name}}</text>
+                <view class="filter-indicator" wx:if="{{activeFilters[item.name]}}"></view>
             </view>
+
         </scroll-view>
+        <!-- 筛选按钮 -->
+        <view class="filter-container">
+            <view class="filter-btn" bindtap="openFilterPopup">
+                <text>筛选</text>
+                <image src="/images/filter.png" mode="aspectFit"></image>
+            </view>
+        </view>
         <!-- 内容区域 -->
         <swiper class="content" current="{{currentTab}}" duration="300" bindchange="swiperChange" style="height: {{swiperHeight}}px;">
             <swiper-item wx:for="{{tabs}}" wx:key="index" class="swiper-item">
-                <!-- 每个分类使用独立的scroll-view -->
-                <scroll-view 
-                scroll-y 
-                enhanced 
-                show-scrollbar="{{false}}" 
-                bindscrolltolower="loadMore" 
-                style="height: 100%;" 
-                data-category="{{item.name}}"
-                >
+                <scroll-view scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="loadMore" style="height: 100%;" data-category="{{item.name}}">
                     <view class="job-list">
+                        <!-- 筛选条件显示 -->
+                        <view class="filter-tag" wx:if="{{activeFilters[item.name]}}">
+                            <text>筛选地点: "{{activeFilters[item.name].location}}"</text>
+                            <text class="clear-filter" bindtap="resetFilter">清除</text>
+                        </view>
+                        <!-- 内容为空时显示 -->
+                        <view wx:if="{{!(resumesLists[item.name] && resumesLists[item.name].length)}}" class="empty-text-search">
+                            <text>暂无数据</text>
+                        </view>
                         <block wx:for="{{resumesLists[item.name] || []}}" wx:key="_id">
                             <view class="list-item" bindtap="getResumeDetails" data-id="{{item.id}}">
                                 <view class="item-title">
@@ -39,12 +48,13 @@
                                     <text>{{item.salary}}元</text>
                                     <text>性别: {{item.selectedGender}}</text>
                                     <text>年龄: {{item.age}}</text>
+                                    <text>地点: {{item.location}}</text>
                                 </view>
                             </view>
                         </block>
 
                         <!-- 加载状态提示 -->
-                        <view class="load-more-footer">
+                        <view class="load-more-footer" wx:if="{{!(!(resumesLists[item.name] && resumesLists[item.name].length))}}">
                             <view wx:if="{{loadingMore && currentTab === index}}">
                                 <text>加载中...</text>
                             </view>
@@ -60,10 +70,28 @@
             </swiper-item>
         </swiper>
     </view>
+
     <!-- 未登陆的情况下，展示 -->
     <isLogin isLogin="{{!isLogin}}" bind:toLogin="toLogin" />
+
+    <!-- 筛选弹窗 -->
+    <view class="filter-popup" wx:if="{{showFilterPopup}}">
+        <view class="filter-mask" catchtap="closeFilterPopup"></view>
+        <view class="filter-content">
+            <view class="filter-header">
+                <text>筛选条件</text>
+                <icon type="cancel" size="20" bindtap="closeFilterPopup"></icon>
+            </view>
+            <view class="filter-body">
+                <view class="filter-item">
+                    <text class="filter-label">地点包含</text>
+                    <input type="text" placeholder="请输入地点关键词" value="{{tempFilterValue}}" bindinput="onFilterInput" class="filter-input" />
+                </view>
+            </view>
+            <view class="filter-footer">
+                <button class="reset-btn" bindtap="resetFilter">重置</button>
+                <button class="confirm-btn" bindtap="applyFilter">确定</button>
+            </view>
+        </view>
+    </view>
 </view>
-
-
-
-

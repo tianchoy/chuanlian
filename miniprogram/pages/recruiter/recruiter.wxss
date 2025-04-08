@@ -86,3 +86,151 @@ scroll-view {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* iOS流畅滚动 */
 }
+
+/* 筛选容器 */
+.filter-container {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.filter-btn image {
+    width: 16px;
+    height: 16px;
+    margin-left: 5px;
+}
+
+.filter-tag {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #f5f5f5;
+    border-radius: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.clear-btn {
+    margin-left: 5px;
+    font-size: 16px;
+    color: #999;
+}
+
+/* 筛选面板 */
+.filter-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+}
+
+.filter-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.filter-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border-radius: 15px 15px 0 0;
+    padding: 15px;
+    box-sizing: border-box;
+    animation: slideUp 0.3s;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.close-btn {
+    font-size: 24px;
+    color: #999;
+}
+
+.filter-body {
+    padding: 15px 0;
+}
+
+.filter-item {
+    margin-bottom: 20px;
+}
+
+.filter-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.filter-input {
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.filter-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.filter-footer .btn {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.filter-footer .cancel {
+    background-color: #f5f5f5;
+    color: #666;
+    margin-right: 10px;
+}
+
+.filter-footer .confirm {
+    background-color: #1E90FF;
+    color: #fff;
+    margin-left: 10px;
+}
+.empty-text-search{
+    margin: 50rpx 0;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
