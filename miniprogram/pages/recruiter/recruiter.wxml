@@ -11,7 +11,7 @@
             <view class="filter-body">
                 <view class="filter-item">
                     <text class="filter-label">工作地点</text>
-                    <input class="filter-input" placeholder="请输入工作地点" value="{{filterLocation}}" bindinput="onFilterInput" />
+                    <input type="text" maxlength="10" class="filter-input" placeholder="请输入工作地点" value="{{filterLocation}}" bindinput="onFilterInput" />
                 </view>
             </view>
             <view class="filter-footer">

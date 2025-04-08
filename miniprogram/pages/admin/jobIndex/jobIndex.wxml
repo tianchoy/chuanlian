@@ -1,6 +1,6 @@
 <!--pages/admin/jobIndex/jobIndex.wxml-->
 <view class="container">
-    <view class="empty-status" wx:if="{{jobLists.length == 0 }}">暂无需要审核的招聘信息</view>
+    <view class="empty-status" wx:if="{{tabs.length === 0 }}">暂无需要审核的招聘信息</view>
     <view class="list-box" wx:else>
         <view class="list-item" wx:for="{{jobLists}}" wx:key="index">
             <view class="list-item child" wx:for="{{item}}" wx:key="index">

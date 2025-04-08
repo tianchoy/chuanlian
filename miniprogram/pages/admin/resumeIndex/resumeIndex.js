@@ -6,6 +6,7 @@ Page({
      */
     data: {
         jobLists: [],
+        tabs:[]
     },
 
     /**
@@ -25,9 +26,10 @@ Page({
                     types:'0'
                 },
                 success: res => {
-                    console.log(res.result.resumesLists)
+                    console.log(res.result)
                     this.setData({
-                        jobLists: res.result.resumesLists
+                        jobLists: res.result.resumesLists,
+                        tabs:res.result.tabs
                     })
                     this.hideLoading()
                 },

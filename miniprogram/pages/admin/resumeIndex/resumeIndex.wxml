@@ -1,6 +1,8 @@
 <!--pages/admin/resumeIndex/resumeIndex.wxml-->
 <view class="container">
-    <view class="empty-status" wx:if="{{jobLists.length == 0}}">暂无需要审核的求职信息</view>
+    <view class="empty-status" wx:if="{{tabs.length === 0}}">
+        暂无需要审核的求职信息
+    </view>
     <view wx:else class="list-box">
         <view class="list-content" wx:for="{{jobLists}}" wx:key="index">
             <view class="list-item" wx:for="{{item}}" wx:key="index">

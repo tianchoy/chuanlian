@@ -5,7 +5,8 @@ Page({
      * 页面的初始数据
      */
     data: {
-        jobLists: []
+        jobLists: [],
+        tabs:[]
     },
 
     /**
@@ -24,9 +25,10 @@ Page({
                     types: '0'
                 },
                 success: res => {
-                    console.log(res.result.jobLists)
+                    console.log(typeof res.result.jobLists)
                     this.setData({
-                        jobLists: res.result.jobLists
+                        jobLists: res.result.jobLists,
+                        tabs:res.result.tabs
                     })
                     this.hideLoading()
                 },
