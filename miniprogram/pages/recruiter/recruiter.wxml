@@ -11,7 +11,8 @@
             <view class="filter-body">
                 <view class="filter-item">
                     <text class="filter-label">工作地点</text>
-                    <input type="text" maxlength="10" class="filter-input" placeholder="请输入工作地点" value="{{filterLocation}}" bindinput="onFilterInput" />
+                    <!-- <input type="text" maxlength="10" class="filter-input" placeholder="请输入工作地点" value="{{filterLocation}}" bindinput="onFilterInput" /> -->
+                    <input type="text" maxlength="10" class="filter-input" placeholder="请输入工作地点" value="{{filterLocations[tabs[currentTab].name] || ''}}" bindinput="onFilterInput" />
                 </view>
             </view>
             <view class="filter-footer">
@@ -48,8 +49,8 @@
                 <scroll-view scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="loadMore" style="height: 100%;" data-category="{{item.name}}">
                     <view class="job-list">
                         <!-- 筛选条件显示 -->
-                        <view wx:if="{{isFiltering}}" class="filter-tag">
-                            <text>筛选地点: "{{filterLocation}}"</text>
+                        <view wx:if="{{isFiltering[tabs[currentTab]] && tabs[currentTab].name}}">
+                            <text>筛选地点: "{{filterLocations[tabs[currentTab].name]}}"</text>
                             <view class="clear-btn" bindtap="clearFilter">清除</view>
                         </view>
                         <!-- 内容为空时显示 -->
