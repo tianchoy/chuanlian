@@ -67,7 +67,7 @@ exports.main = async (event, context) => {
             route: item.routeFrom && item.routeTo ? `${item.routeFrom}~${item.routeTo}` : '航线未指定',
             date: item.selectedDate || '日期未指定',
             selectedLocation: item.selectedLocation || '地点未指定',
-            familyName: item.familyName || '匿名用户',
+            familyName: item.familyName || '船连用户',
             company: item.companyInfo || {},
             updatedAt: item.updatedAt,
             isUrgent: !!item.isUrgent,

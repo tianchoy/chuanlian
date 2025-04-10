@@ -276,3 +276,25 @@ scroll-view {
     color: #fff;
     margin-left: 10px;
 }
+.filter-indicator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ff4d4f;
+}
+
+.filter-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-right: 15px;
+}
+
+.filter-btn image {
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+}
