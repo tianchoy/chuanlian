@@ -198,6 +198,7 @@ Page({
 
     // 获取简历数据
     async loadTabData(tabName, initialLoad = false, isInitialLoadAll = false) {
+        let that = this
         if (this.data.loadingMore && !initialLoad) return
         if (!tabName) return
 
@@ -211,7 +212,7 @@ Page({
                 wx.showNavigationBarLoading()
             }
         }
-
+        initialLoad ? that.showLoading() : wx.showNavigationBarLoading()
         try {
             const res = await wx.cloud.callFunction({
                 name: 'getResumes',
@@ -291,6 +292,7 @@ Page({
             if (!isInitialLoadAll && initialLoad) {
                 wx.hideNavigationBarLoading()
             }
+            initialLoad ? that.hideLoading() : wx.hideNavigationBarLoading()
         }
     },
 
@@ -361,7 +363,7 @@ Page({
 
         // 显示加载状态
         wx.showNavigationBarLoading()
-        
+        console.log('switchTab')
         // 如果该分类没有缓存数据或数据为空，则加载
         if (!this.data.cachedResumesLists[tabName] || this.data.cachedResumesLists[tabName].length === 0) {
             this.loadTabData(tabName, true)
@@ -426,7 +428,14 @@ Page({
             wx.stopPullDownRefresh()
         })
     },
+    showLoading() {
+        wx.showLoading({ title: '加载中', mask: true })
+    },
 
+    hideLoading() {
+        wx.hideLoading()
+    },
+    
     onShow() {
         if (!this.data.isLogin) {
             this.getUserId()
