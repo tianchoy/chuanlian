@@ -40,6 +40,7 @@
             <view class="filter-btn" bindtap="toggleFilter">
                 <text>筛选</text>
                 <image src="/images/filter.png" mode="aspectFit"></image>
+                <view class="filter-indicator" wx:if="{{filterLocations[tabs[currentTab].name]}}"></view>
             </view>
         </view>
         <!-- 内容区域 -->
@@ -49,7 +50,7 @@
                 <scroll-view scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="loadMore" style="height: 100%;" data-category="{{item.name}}">
                     <view class="job-list">
                         <!-- 筛选条件显示 -->
-                        <view wx:if="{{isFiltering[tabs[currentTab]] && tabs[currentTab].name}}">
+                        <view class="filter-tag" wx:if="{{filterLocations[tabs[currentTab].name]}}">
                             <text>筛选地点: "{{filterLocations[tabs[currentTab].name]}}"</text>
                             <view class="clear-btn" bindtap="clearFilter">清除</view>
                         </view>

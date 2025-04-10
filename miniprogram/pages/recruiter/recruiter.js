@@ -342,7 +342,7 @@ Page({
             this.getJobs();
         }
     },
-    onTabItemTap(item) {
-        this.getJobs(true)
-    }
+    // onTabItemTap(item) {
+    //     this.getJobs(true)
+    // }
 })

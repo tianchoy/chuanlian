@@ -91,6 +91,7 @@ Page({
             this.setData({ isLoading: false })
         }
     },
+    // 处理简历浏览事件
     handleResumeBrowsed({ resumeId }) {
         this.setData({
             resumesLists: Object.fromEntries(
@@ -189,7 +190,6 @@ Page({
             loadingMore: true,
             [`currentPages.${tabName}`]: initialLoad ? 1 : (this.data.currentPages[tabName] || 1) + 1
         })
-
         try {
             const res = await wx.cloud.callFunction({
                 name: 'getResumes',
@@ -210,7 +210,17 @@ Page({
                 throw new Error(res.result.errMsg)
             }
 
-            const newData = res.result.resumesLists[tabName] || []
+            let newData = res.result.resumesLists[tabName] || []
+            // 检查浏览状态
+            if (this.data.isLogin && newData.length > 0) {
+                const resumeIds = newData.map(resume => resume.id).filter(Boolean)
+                const browsedIds = await checkBrowsedStatus(resumeIds, BROWSE_TYPE.RESUME)
+                newData = newData.map(resume => ({
+                    ...resume,
+                    isBrowsed: browsedIds.includes(resume.id)
+                }))
+            }
+
             const currentData = this.data.resumesLists[tabName] || []
 
             this.setData({
@@ -220,6 +230,7 @@ Page({
                 [`hasMoreData.${tabName}`]: res.result.hasMoreData[tabName],
                 loadingMore: false
             })
+
 
             // 特殊处理：当首次加载无数据时尝试备用解析方式
             if (initialLoad && newData.length === 0) {
@@ -289,18 +300,29 @@ Page({
     },
 
     // 点击分类标签切换
-    // 切换分类优化
-    async switchTab(e) {
+    switchTab(e) {
         const index = e.currentTarget.dataset.index
         const tabName = this.data.tabs[index]?.name
-
+        // 如果滑动到当前已选标签或无效标签，则不做处理
+        if (!tabName || this.data.currentTab === index) return
+        // 显示加载状态（比点击切换更轻量）
+        wx.showNavigationBarLoading()
+        // 先更新UI状态
         this.setData({
             currentTab: index,
-            [`resumesLists.${tabName}`]: [],
-            [`currentPages.${tabName}`]: 1
+            scrollLeft: this.calculateScrollPosition(index)
+        }, async () => {
+            try {
+                // 如果该分类没有数据或数据为空，则加载
+                if (!this.data.resumesLists[tabName] || this.data.resumesLists[tabName].length === 0) {
+                    await this.loadTabData(tabName, true)
+                }
+            } catch (error) {
+                console.error('滑动加载失败:', error)
+            } finally {
+                wx.hideNavigationBarLoading()
+            }
         })
-
-        await this.loadTabData(tabName, true)
     },
 
     // 计算标签滚动位置
@@ -314,13 +336,10 @@ Page({
     swiperChange(e) {
         const index = e.detail.current
         const tabName = this.data.tabs[index]?.name
-
         // 如果滑动到当前已选标签或无效标签，则不做处理
         if (!tabName || this.data.currentTab === index) return
-
         // 显示加载状态（比点击切换更轻量）
         wx.showNavigationBarLoading()
-
         // 先更新UI状态
         this.setData({
             currentTab: index,
@@ -368,5 +387,5 @@ Page({
         if (!this.data.isLogin) {
             this.getUserId()
         }
-    }
+    },
 })

@@ -18,6 +18,7 @@
             <view class="filter-btn" bindtap="openFilterPopup">
                 <text>筛选</text>
                 <image src="/images/filter.png" mode="aspectFit"></image>
+                <view class="filter-indicator" wx:if="{{activeFilters[tabs[currentTab].name]}}"></view>
             </view>
         </view>
         <!-- 内容区域 -->

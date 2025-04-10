@@ -1,6 +1,6 @@
 {
-  "usingComponents": {
-    "list-item": "/components/zhaopin/list-item/list-item",
-    "isLogin": "/components/isLogin/isLogin"
-  }
+    "usingComponents": {
+        "list-item": "/components/zhaopin/list-item/list-item",
+        "isLogin": "/components/isLogin/isLogin"
+    }
 }
