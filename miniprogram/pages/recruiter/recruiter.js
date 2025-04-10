@@ -13,7 +13,7 @@ Page({
         swiperHeight: 0,
         tabWidth: 117,
         screenWidth: 0,
-        pageSize: 1,
+        pageSize: 10,
         currentPages: {},
         hasMoreData: {},
         loadingMore: false,
@@ -183,6 +183,10 @@ Page({
                     selectedJobType: currentMapping.type,
                     filterLocation: filterLocation
                 }
+            })
+            console.log({
+                selectedJobCategory: currentMapping.category,
+                    selectedJobType: currentMapping.type,
             })
             console.log(res.result)
             // 处理返回数据

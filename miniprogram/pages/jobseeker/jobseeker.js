@@ -13,7 +13,7 @@ Page({
         swiperHeight: 0,
         tabWidth: 117,
         screenWidth: 0,
-        pageSize: 1,
+        pageSize: 10,
         currentPages: {},
         hasMoreData: {},
         loadingMore: false,
@@ -204,7 +204,9 @@ Page({
                         this.data._defaultRanks
                 }
             })
-
+            console.log({
+                categoryTitles: [tabName]
+            })
             // 错误处理
             if (res.result.errCode) {
                 throw new Error(res.result.errMsg)
