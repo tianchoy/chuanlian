@@ -7,7 +7,8 @@ Page({
         isLogin: false,
         isLoading: false,
         tabs: [],
-        jobLists: {},
+        jobLists: {},        // 当前展示的数据
+        cachedJobLists: {},  // 缓存所有分类的数据
         currentTab: 0,
         scrollLeft: 0,
         swiperHeight: 0,
@@ -15,19 +16,21 @@ Page({
         screenWidth: 0,
         pageSize: 10,
         currentPages: {},
+        cachedCurrentPages: {},  // 缓存所有分类的页码
         hasMoreData: {},
+        cachedHasMoreData: {},   // 缓存所有分类的是否有更多数据
         loadingMore: false,
         showFilter: false,
         filterLocation: '',
         filterLocations: {},
         isFiltering: {},
-        categoryMappings: {}
+        categoryMappings: {},
+        initialLoadComplete: false  // 标记是否已完成初始加载
     },
 
     onLoad() {
         this.initPage()
         this.getUserId()
-        this.getJobs(true)
         this.initCate()
         app.on('jobBrowsed', this.handleJobBrowsed)
 
@@ -44,7 +47,8 @@ Page({
     onUnload() {
         app.off('jobBrowsed', this.handleJobBrowsed)
     },
-    //初始化分类
+
+    // 初始化分类
     initCate() {
         wx.cloud.callFunction({
             name: 'getAllJobCategories',
@@ -55,15 +59,16 @@ Page({
                 tabs: res.result.tabs || [],
                 categoryMappings: res.result.categoryMappings || {},
                 jobLists: {},
+                cachedJobLists: {},
                 currentPages: {},
-                hasMoreData: {}
+                cachedCurrentPages: {},
+                hasMoreData: {},
+                cachedHasMoreData: {},
+                initialLoadComplete: false
             }, () => {
                 // 加载第一个分类的数据
                 if (this.data.tabs.length > 0) {
                     this.getJobsForTab(this.data.tabs[0], true)
-                    // this.data.tabs.forEach(tab => {
-                    //     this.getJobsForTab(tab, true)
-                    // })
                 }
             })
         }).catch(err => {
@@ -87,6 +92,14 @@ Page({
         this.setData({
             jobLists: Object.fromEntries(
                 Object.entries(this.data.jobLists).map(([title, jobs]) => [
+                    title,
+                    jobs.map(job =>
+                        job.id === jobId ? { ...job, isBrowsed: true } : job
+                    )
+                ])
+            ),
+            cachedJobLists: Object.fromEntries(
+                Object.entries(this.data.cachedJobLists).map(([title, jobs]) => [
                     title,
                     jobs.map(job =>
                         job.id === jobId ? { ...job, isBrowsed: true } : job
@@ -129,11 +142,15 @@ Page({
             showFilter: false,
             [`currentPages.${currentTabTitle}`]: 1,
             [`jobLists.${currentTabTitle}`]: [],
-            [`hasMoreData.${currentTabTitle}`]: false
+            [`hasMoreData.${currentTabTitle}`]: false,
+            [`cachedJobLists.${currentTabTitle}`]: [],  // 清空缓存数据
+            [`cachedCurrentPages.${currentTabTitle}`]: 1,
+            [`cachedHasMoreData.${currentTabTitle}`]: false
         }, () => {
             this.getJobsForTab(currentTabTitle, true)
         })
     },
+
     // 清除筛选
     clearFilter() {
         const currentTabTitle = this.data.tabs[this.data.currentTab]?.name
@@ -145,11 +162,15 @@ Page({
             filterLocation: '', // 清空输入框
             [`currentPages.${currentTabTitle}`]: 1,
             [`jobLists.${currentTabTitle}`]: [],
-            [`hasMoreData.${currentTabTitle}`]: false
+            [`hasMoreData.${currentTabTitle}`]: false,
+            [`cachedJobLists.${currentTabTitle}`]: [],  // 清空缓存数据
+            [`cachedCurrentPages.${currentTabTitle}`]: 1,
+            [`cachedHasMoreData.${currentTabTitle}`]: false
         }, () => {
             this.getJobsForTab(currentTabTitle, true)
         })
     },
+
     // 为特定分类获取工作
     async getJobsForTab(tabInfo, initialLoad = false) {
         if (this.data.loadingMore && !initialLoad) return
@@ -165,13 +186,16 @@ Page({
 
             // 确保数据结构存在
             if (!this.data.jobLists) this.setData({ jobLists: {} })
+            if (!this.data.cachedJobLists) this.setData({ cachedJobLists: {} })
             if (!this.data.currentPages) this.setData({ currentPages: {} })
+            if (!this.data.cachedCurrentPages) this.setData({ cachedCurrentPages: {} })
             if (!this.data.hasMoreData) this.setData({ hasMoreData: {} })
+            if (!this.data.cachedHasMoreData) this.setData({ cachedHasMoreData: {} })
 
             // 获取分类映射关系
             const mappings = this.data.categoryMappings || {}
             const currentMapping = mappings[currentTabTitle] || {}
-
+            
             // 调用云函数
             const res = await wx.cloud.callFunction({
                 name: 'getJobs',
@@ -184,27 +208,35 @@ Page({
                     filterLocation: filterLocation
                 }
             })
-            console.log({
-                selectedJobCategory: currentMapping.category,
-                    selectedJobType: currentMapping.type,
-            })
             console.log(res.result)
             // 处理返回数据
-            const newJobLists = { ...(this.data.jobLists || {}) }
-            const newCurrentPages = { ...(this.data.currentPages || {}) }
-            const newHasMoreData = { ...(this.data.hasMoreData || {}) }
+            const newJobLists = { ...this.data.jobLists }
+            const newCachedJobLists = { ...this.data.cachedJobLists }
+            const newCurrentPages = { ...this.data.currentPages }
+            const newCachedCurrentPages = { ...this.data.cachedCurrentPages }
+            const newHasMoreData = { ...this.data.hasMoreData }
+            const newCachedHasMoreData = { ...this.data.cachedHasMoreData }
 
             if (initialLoad) {
+                // 初始加载
                 newJobLists[currentTabTitle] = res.result.data?.jobs || []
+                newCachedJobLists[currentTabTitle] = res.result.data?.jobs || []
             } else {
+                // 加载更多 - 修复括号问题
                 newJobLists[currentTabTitle] = [
-                    ...(newJobLists[currentTabTitle] || []),  // 修复这里，移除了多余的括号
+                    ...(newJobLists[currentTabTitle] || []),
+                    ...(res.result.data?.jobs || [])
+                ]
+                newCachedJobLists[currentTabTitle] = [
+                    ...(newCachedJobLists[currentTabTitle] || []),
                     ...(res.result.data?.jobs || [])
                 ]
             }
 
             newCurrentPages[currentTabTitle] = currentPage
+            newCachedCurrentPages[currentTabTitle] = currentPage
             newHasMoreData[currentTabTitle] = res.result.data?.pagination?.hasMore || false
+            newCachedHasMoreData[currentTabTitle] = res.result.data?.pagination?.hasMore || false
 
             // 处理浏览状态
             if (this.data.isLogin && newJobLists[currentTabTitle]?.length > 0) {
@@ -215,13 +247,21 @@ Page({
                     ...job,
                     isBrowsed: browsedIds.includes(job.id)
                 }))
+                newCachedJobLists[currentTabTitle] = newCachedJobLists[currentTabTitle].map(job => ({
+                    ...job,
+                    isBrowsed: browsedIds.includes(job.id)
+                }))
             }
 
             // 更新数据
             this.setData({
                 jobLists: newJobLists,
+                cachedJobLists: newCachedJobLists,
                 currentPages: newCurrentPages,
-                hasMoreData: newHasMoreData
+                cachedCurrentPages: newCachedCurrentPages,
+                hasMoreData: newHasMoreData,
+                cachedHasMoreData: newCachedHasMoreData,
+                initialLoadComplete: true
             })
 
         } catch (err) {
@@ -236,38 +276,6 @@ Page({
         }
     },
 
-    // 修改getJobs方法
-    async getJobs(initialLoad = false) {
-        if (initialLoad) {
-            // 初次加载所有分类
-            const res = await wx.cloud.callFunction({
-                name: 'getAllJobCategories',
-                data: { types: '2' }
-            })
-            console.log('getAllJobCategories:', res.result)
-            this.setData({
-                tabs: res.result.tabs || [],
-                categoryMappings: res.result.categoryMappings || {},
-                jobLists: {},
-                currentPages: {},
-                hasMoreData: {},
-                filterLocations: {},
-                isFiltering: {}
-            }, () => {
-                // 加载第一个分类的数据
-                if (this.data.tabs.length > 0) {
-                    this.getJobsForTab(this.data.tabs[0], true)
-                }
-            })
-        } else {
-            // 加载更多当前分类数据
-            const currentTab = this.data.tabs[this.data.currentTab]
-            if (currentTab) {
-                this.getJobsForTab(currentTab)
-            }
-        }
-    },
-
     toLogin() {
         wx.switchTab({
             url: '/pages/user-center/index',
@@ -275,7 +283,6 @@ Page({
     },
 
     toDetail(e) {
-
         const id = e.currentTarget.dataset.id
         console.log(e)
         if (!id) return
@@ -297,26 +304,66 @@ Page({
 
     switchTab(e) {
         const index = e.currentTarget.dataset.index
-        this.setData({ currentTab: index }, () => {
-            this.adjustScrollPosition(index)
-            // 切换分类时加载数据
-            const currentTab = this.data.tabs[index]
-            if (currentTab && !this.data.jobLists[currentTab.name]) {
+        const currentTab = this.data.tabs[index]
+        if (!currentTab) return
+        
+        const currentTabTitle = currentTab.name
+        
+        // 先显示缓存数据（如果有）
+        if (this.data.cachedJobLists[currentTabTitle]) {
+            this.setData({
+                currentTab: index,
+                [`jobLists.${currentTabTitle}`]: this.data.cachedJobLists[currentTabTitle] || [],
+                [`currentPages.${currentTabTitle}`]: this.data.cachedCurrentPages[currentTabTitle] || 1,
+                [`hasMoreData.${currentTabTitle}`]: this.data.cachedHasMoreData[currentTabTitle] || false
+            }, () => {
+                this.adjustScrollPosition(index)
                 this.getJobsForTab(currentTab, true)
-            }
-        })
+                // 检查是否需要更新数据（如果缓存数据为空或需要刷新）
+                // if (this.data.cachedJobLists[currentTabTitle]?.length === 0 || 
+                //     this.data.isFiltering[currentTabTitle]) {
+                //     this.getJobsForTab(currentTab, true)
+                // }
+            })
+        } else {
+            // 没有缓存数据，直接加载
+            this.setData({ currentTab: index }, () => {
+                this.adjustScrollPosition(index)
+                this.getJobsForTab(currentTab, true)
+            })
+        }
     },
 
     swiperChange(e) {
         const index = e.detail.current
-        this.setData({ currentTab: index }, () => {
-            this.adjustScrollPosition(index)
-            // 滑动切换时加载数据
-            const currentTab = this.data.tabs[index]
-            if (currentTab && !this.data.jobLists[currentTab.name]) {
+        const currentTab = this.data.tabs[index]
+        if (!currentTab) return
+        
+        const currentTabTitle = currentTab.name
+        
+        // 先显示缓存数据（如果有）
+        if (this.data.cachedJobLists[currentTabTitle]) {
+            this.setData({
+                currentTab: index,
+                [`jobLists.${currentTabTitle}`]: this.data.cachedJobLists[currentTabTitle] || [],
+                [`currentPages.${currentTabTitle}`]: this.data.cachedCurrentPages[currentTabTitle] || 1,
+                [`hasMoreData.${currentTabTitle}`]: this.data.cachedHasMoreData[currentTabTitle] || false
+            }, () => {
+                this.adjustScrollPosition(index)
                 this.getJobsForTab(currentTab, true)
-            }
-        })
+                // 检查是否需要更新数据（如果缓存数据为空或需要刷新）
+                // if (this.data.cachedJobLists[currentTabTitle]?.length === 0 || 
+                //     this.data.isFiltering[currentTabTitle]) {
+                //     this.getJobsForTab(currentTab, true)
+                // }
+            })
+        } else {
+            // 没有缓存数据，直接加载
+            this.setData({ currentTab: index }, () => {
+                this.adjustScrollPosition(index)
+                this.getJobsForTab(currentTab, true)
+            })
+        }
     },
 
     adjustScrollPosition(index) {
@@ -337,16 +384,15 @@ Page({
         if (!this.data.isLogin) {
             this.getUserId()
         }
-        // this.getJobs(true)
     },
 
     loadMore(e) {
         const category = e.currentTarget.dataset.category;
         if (this.data.hasMoreData[category] && !this.data.loadingMore) {
-            this.getJobs();
+            const currentTab = this.data.tabs.find(tab => tab.name === category)
+            if (currentTab) {
+                this.getJobsForTab(currentTab)
+            }
         }
-    },
-    // onTabItemTap(item) {
-    //     this.getJobs(true)
-    // }
+    }
 })
