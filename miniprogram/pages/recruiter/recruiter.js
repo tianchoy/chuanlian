@@ -195,7 +195,7 @@ Page({
             // 获取分类映射关系
             const mappings = this.data.categoryMappings || {}
             const currentMapping = mappings[currentTabTitle] || {}
-            
+
             // 调用云函数
             const res = await wx.cloud.callFunction({
                 name: 'getJobs',
@@ -306,9 +306,9 @@ Page({
         const index = e.currentTarget.dataset.index
         const currentTab = this.data.tabs[index]
         if (!currentTab) return
-        
+
         const currentTabTitle = currentTab.name
-        
+
         // 先显示缓存数据（如果有）
         if (this.data.cachedJobLists[currentTabTitle]) {
             this.setData({
@@ -338,9 +338,9 @@ Page({
         const index = e.detail.current
         const currentTab = this.data.tabs[index]
         if (!currentTab) return
-        
+
         const currentTabTitle = currentTab.name
-        
+
         // 先显示缓存数据（如果有）
         if (this.data.cachedJobLists[currentTabTitle]) {
             this.setData({
@@ -381,6 +381,7 @@ Page({
     },
 
     onShow() {
+        console.log('onshow', this.data.currentTab)
         if (!this.data.isLogin) {
             this.getUserId()
         }
@@ -394,5 +395,9 @@ Page({
                 this.getJobsForTab(currentTab)
             }
         }
-    }
+    },
+    onTabItemTap(item) {
+        const currentTab = this.data.currentTab
+        this.getJobsForTab(currentTab, true)
+    },
 })

@@ -82,7 +82,7 @@ Page({
 
             // 2. 加载所有分类的第一页数据
             if (categories.length > 0) {
-                const loadPromises = categories.map(category => 
+                const loadPromises = categories.map(category =>
                     this.loadTabData(category.name, true, true) // 第三个参数表示是初始加载
                 )
                 await Promise.all(loadPromises)
@@ -222,8 +222,8 @@ Page({
                     pageSize: this.data.pageSize,
                     currentPage: initialLoad ? 1 : (this.data.currentPages[tabName] || 1) + 1,
                     filters: this.data.activeFilters[tabName] || {},
-                    rankKeywords: this.data.rankKeywords.length > 0 ? 
-                        this.data.rankKeywords : 
+                    rankKeywords: this.data.rankKeywords.length > 0 ?
+                        this.data.rankKeywords :
                         this.data._defaultRanks
                 }
             })
@@ -234,7 +234,7 @@ Page({
             }
 
             let newData = res.result.resumesLists[tabName] || []
-            
+
             // 检查浏览状态
             if (this.data.isLogin && newData.length > 0) {
                 const resumeIds = newData.map(resume => resume.id).filter(Boolean)
@@ -250,14 +250,14 @@ Page({
             // 更新缓存数据
             const updatedCache = {
                 ...this.data.cachedResumesLists,
-                [tabName]: initialLoad ? 
-                    newData : 
+                [tabName]: initialLoad ?
+                    newData :
                     [...currentData, ...newData]
             }
 
             // 如果是初始加载或者是当前显示的tab，则更新显示数据
-            const shouldUpdateDisplay = initialLoad || 
-                                     this.data.tabs[this.data.currentTab]?.name === tabName
+            const shouldUpdateDisplay = initialLoad ||
+                this.data.tabs[this.data.currentTab]?.name === tabName
 
             this.setData({
                 cachedResumesLists: updatedCache,
@@ -265,10 +265,10 @@ Page({
                 [`hasMoreData.${tabName}`]: res.result.hasMoreData[tabName],
                 loadingMore: false,
                 isRefreshing: false,
-                ...(shouldUpdateDisplay && { 
-                    [`resumesLists.${tabName}`]: initialLoad ? 
-                        newData : 
-                        [...currentData, ...newData] 
+                ...(shouldUpdateDisplay && {
+                    [`resumesLists.${tabName}`]: initialLoad ?
+                        newData :
+                        [...currentData, ...newData]
                 })
             })
 
@@ -353,7 +353,7 @@ Page({
         const tabName = this.data.tabs[index]?.name
         // 如果滑动到当前已选标签或无效标签，则不做处理
         if (!tabName || this.data.currentTab === index) return
-        
+
         // 先显示缓存数据
         this.setData({
             currentTab: index,
@@ -387,7 +387,7 @@ Page({
         const tabName = this.data.tabs[index]?.name
         // 如果滑动到当前已选标签或无效标签，则不做处理
         if (!tabName || this.data.currentTab === index) return
-        
+
         // 先显示缓存数据
         this.setData({
             currentTab: index,
@@ -397,7 +397,7 @@ Page({
 
         // 显示加载状态
         wx.showNavigationBarLoading()
-        
+
         // 如果该分类没有缓存数据或数据为空，则加载
         if (!this.data.cachedResumesLists[tabName] || this.data.cachedResumesLists[tabName].length === 0) {
             this.loadTabData(tabName, true)
@@ -435,10 +435,14 @@ Page({
     hideLoading() {
         wx.hideLoading()
     },
-    
+
     onShow() {
         if (!this.data.isLogin) {
             this.getUserId()
         }
+    },
+    onTabItemTap(item) {
+        const currentTabName = this.data.tabs[this.data.currentTab]?.name
+        this.loadTabData(currentTabName, true)
     },
 })
