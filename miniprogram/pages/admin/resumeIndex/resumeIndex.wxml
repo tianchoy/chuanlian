@@ -1,11 +1,11 @@
 <!--pages/admin/resumeIndex/resumeIndex.wxml-->
 <view class="container">
-    <view class="empty-status" wx:if="{{tabs.length === 0}}">
+    <view class="empty-status" wx:if="{{jobLists.length === 0}}">
         暂无需要审核的求职信息
     </view>
     <view wx:else class="list-box">
-        <view class="list-content" wx:for="{{jobLists}}" wx:key="index">
-            <view class="list-item" wx:for="{{item}}" wx:key="index">
+        <view class="list-item" wx:for="{{jobLists}}" wx:key="index">
+            <!-- <view class="list-item" wx:for="{{item}}" wx:key="index"> -->
                 <view class="title-box" bindtap="getResumeDetails" data-id="{{item.id}}">
                     <view class="title">
                         {{item.title === '水手水手' ? '水手' : item.title}}
@@ -19,7 +19,7 @@
                     <text> 性别:{{item.selectedGender}} </text>
                     <text> 年龄:{{item.age}}</text>
                 </view>
-            </view>
+            <!-- </view> -->
         </view>
     </view>
     <taBbar activeIndex="{{1}}" />

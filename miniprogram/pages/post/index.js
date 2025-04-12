@@ -5,7 +5,9 @@ Page({
         isLoading: false,
         status: ['审核中', '未过审', '已上线', '已下线'],
         jobLists: [],
-        openid: ''
+        openid: '',
+        postJobsNum:10, //最多发布招聘的职位数
+        postResumeNum:3, //最多发布求职数
     },
 
     onLoad: function (options) {
@@ -65,18 +67,20 @@ Page({
     async publish(e) {
         const types = e.target.dataset.type;
         const openid = this.data.openid;
+        const postJobsNum = this.data.postJobsNum
+        const postResumeNum = this.data.postResumeNum
         this.showLoading()
         // 定义类型与集合、页面路径及发布上限的映射关系
         const typeConfig = {
             publishJobPost: {
                 collection: 'jobs',
                 pageUrl: '/pages/publishJobPost/publishJobPost',
-                limit: 99999
+                limit: postJobsNum
             },
             publishJobSeeking: {
                 collection: 'resumes',
                 pageUrl: '/pages/publishJobSeeking/publishJobSeeking',
-                limit: 99999
+                limit: postResumeNum
             }
         };
         // 获取当前配置

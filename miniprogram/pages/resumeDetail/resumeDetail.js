@@ -100,10 +100,19 @@ Page({
             })
             console.log(res)
             app.emit('resumeBrowsed', { resumeId: resumeId });
-            if (!res.result.success) {
+            // 修改这里的判断条件
+            if (res.result.errCode !== 0) {  // 检查 errCode 而不是 success
                 console.error('浏览记录失败:', res.result)
+                return {
+                    success: false,
+                    error: 'CLOUD_FUNCTION_ERROR',
+                    message: res.result.errMsg
+                }
             }
-            return res.result
+            return {
+                success: true,
+                data: res.result
+            }
         } catch (err) {
             console.error('记录浏览异常:', err)
             return {

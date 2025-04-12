@@ -25,9 +25,9 @@ Page({
                     types: '0'
                 },
                 success: res => {
-                    console.log(typeof res.result.jobLists)
+                    console.log(res.result.data.jobs)
                     this.setData({
-                        jobLists: res.result.jobLists,
+                        jobLists: res.result.data.jobs,
                         tabs:res.result.tabs
                     })
                     this.hideLoading()

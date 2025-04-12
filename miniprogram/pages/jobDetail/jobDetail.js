@@ -38,7 +38,6 @@ Page({
     //检查是不是有查看联系方式的权限
     async onTapViewJobContact() {
         const userinfo = wx.getStorageSync('userinfo')
-        console.log(!!userinfo)
         if (!!userinfo) {
             const hasPermission = await checkJobContactPermission();
             this.setData({ hasPermission })
@@ -99,13 +98,16 @@ Page({
                     type: 'job'
                 }
             })
-            console.log(res)
-            app.emit('jobBrowsed', { jobId: jobId });
-            if (!res.result.success) {
 
+            // 4. 处理云函数返回结果
+            if (res.result.errCode !== 0) {
                 console.error('浏览记录失败:', res.result)
+                return { success: false, error: 'CLOUD_FUNCTION_ERROR' }
             }
-            return res.result
+
+            // 5. 触发事件通知
+            app.emit('jobBrowsed', { jobId: jobId });
+            return { success: true }
         } catch (err) {
             console.error('记录浏览异常:', err)
             return {

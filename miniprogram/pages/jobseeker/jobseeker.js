@@ -99,12 +99,43 @@ Page({
     },
 
     // 处理简历浏览事件
-    handleResumeBrowsed({ resumeId }) {
+    handleResumeBrowsed: async function({ resumeId }) {
+        if (!resumeId) return;
+    
+        // 1. 更新内存状态
+        this.updateBrowsedStatus(resumeId);
+    
+        // 2. 持久化到本地缓存（无论是否登录）
+        const localBrowsed = wx.getStorageSync('browsedResumes') || [];
+        if (!localBrowsed.includes(resumeId)) {
+            wx.setStorageSync('browsedResumes', [...localBrowsed, resumeId]);
+        }
+    
+        // 3. 同步到云端（仅限登录用户）
+        const userInfo = wx.getStorageSync('userinfo');
+        if (userInfo?._id) {
+            try {
+                await wx.cloud.callFunction({
+                    name: 'addBrowseRecord',
+                    data: {
+                        userId: userInfo._id,
+                        targetId: resumeId,
+                        type: 'resume'
+                    }
+                });
+            } catch (err) {
+                console.error('云端同步失败，降级到本地', err);
+            }
+        }
+    },
+    
+    // 提取共用状态更新逻辑
+    updateBrowsedStatus: function(resumeId) {
         this.setData({
             resumesLists: Object.fromEntries(
                 Object.entries(this.data.resumesLists).map(([title, resumes]) => [
                     title,
-                    resumes.map(resume =>
+                    resumes.map(resume => 
                         resume.id === resumeId ? { ...resume, isBrowsed: true } : resume
                     )
                 ])
@@ -112,12 +143,12 @@ Page({
             cachedResumesLists: Object.fromEntries(
                 Object.entries(this.data.cachedResumesLists).map(([title, resumes]) => [
                     title,
-                    resumes.map(resume =>
+                    resumes.map(resume => 
                         resume.id === resumeId ? { ...resume, isBrowsed: true } : resume
                     )
                 ])
             )
-        })
+        });
     },
 
     // 获取分类数据
@@ -199,9 +230,9 @@ Page({
     // 获取简历数据
     async loadTabData(tabName, initialLoad = false, isInitialLoadAll = false) {
         let that = this
+        const userInfo = wx.getStorageSync('userinfo')
         if (this.data.loadingMore && !initialLoad) return
         if (!tabName) return
-
         // 如果是初始加载所有分类，不显示加载状态
         if (!isInitialLoadAll) {
             this.setData({
@@ -214,6 +245,7 @@ Page({
         }
         initialLoad ? that.showLoading() : wx.showNavigationBarLoading()
         try {
+            const localBrowsed = wx.getStorageSync('browsedResumes') || [];
             const res = await wx.cloud.callFunction({
                 name: 'getResumes',
                 data: {
@@ -232,21 +264,25 @@ Page({
             if (res.result.errCode) {
                 throw new Error(res.result.errMsg)
             }
-
             let newData = res.result.resumesLists[tabName] || []
-
-            // 检查浏览状态
-            if (this.data.isLogin && newData.length > 0) {
-                const resumeIds = newData.map(resume => resume.id).filter(Boolean)
-                const browsedIds = await checkBrowsedStatus(resumeIds, BROWSE_TYPE.RESUME)
+            newData = newData.map(resume => ({
+                ...resume,
+                isBrowsed: localBrowsed.includes(String(resume.id)) // 统一转为字符串比较
+            }));
+            if (this.data.isLogin) {
+                const cloudRes = await wx.cloud.callFunction({
+                    name: 'getBrowsedResumes',
+                    data: { userId: userInfo._id }
+                });
+                const cloudBrowsed = cloudRes.result || [];
                 newData = newData.map(resume => ({
                     ...resume,
-                    isBrowsed: browsedIds.includes(resume.id)
-                }))
+                    isBrowsed: resume.isBrowsed || cloudBrowsed.includes(String(resume.id))
+                }));
             }
-
+    
             const currentData = this.data.cachedResumesLists[tabName] || []
-
+    
             // 更新缓存数据
             const updatedCache = {
                 ...this.data.cachedResumesLists,
@@ -254,11 +290,11 @@ Page({
                     newData :
                     [...currentData, ...newData]
             }
-
+    
             // 如果是初始加载或者是当前显示的tab，则更新显示数据
             const shouldUpdateDisplay = initialLoad ||
                 this.data.tabs[this.data.currentTab]?.name === tabName
-
+    
             this.setData({
                 cachedResumesLists: updatedCache,
                 [`currentPages.${tabName}`]: initialLoad ? 1 : (this.data.currentPages[tabName] || 1) + 1,
@@ -271,7 +307,7 @@ Page({
                         [...currentData, ...newData]
                 })
             })
-
+    
             // 特殊处理：当首次加载无数据时尝试备用解析方式
             if (initialLoad && newData.length === 0) {
                 await this.retryWithAltName(tabName)
@@ -353,24 +389,18 @@ Page({
         const tabName = this.data.tabs[index]?.name
         // 如果滑动到当前已选标签或无效标签，则不做处理
         if (!tabName || this.data.currentTab === index) return
-
+    
         // 先显示缓存数据
         this.setData({
             currentTab: index,
             scrollLeft: this.calculateScrollPosition(index),
             [`resumesLists.${tabName}`]: this.data.cachedResumesLists[tabName] || []
         })
-
-        // 显示加载状态
-        wx.showNavigationBarLoading()
-        console.log('switchTab')
+    
         // 如果该分类没有缓存数据或数据为空，则加载
         if (!this.data.cachedResumesLists[tabName] || this.data.cachedResumesLists[tabName].length === 0) {
+            wx.showNavigationBarLoading()
             this.loadTabData(tabName, true)
-        } else {
-            // 即使有缓存数据，也刷新一下确保数据最新
-            this.loadTabData(tabName, true)
-            wx.hideNavigationBarLoading()
         }
     },
 
@@ -387,24 +417,18 @@ Page({
         const tabName = this.data.tabs[index]?.name
         // 如果滑动到当前已选标签或无效标签，则不做处理
         if (!tabName || this.data.currentTab === index) return
-
+    
         // 先显示缓存数据
         this.setData({
             currentTab: index,
             scrollLeft: this.calculateScrollPosition(index),
             [`resumesLists.${tabName}`]: this.data.cachedResumesLists[tabName] || []
         })
-
-        // 显示加载状态
-        wx.showNavigationBarLoading()
-
+    
         // 如果该分类没有缓存数据或数据为空，则加载
         if (!this.data.cachedResumesLists[tabName] || this.data.cachedResumesLists[tabName].length === 0) {
+            wx.showNavigationBarLoading()
             this.loadTabData(tabName, true)
-        } else {
-            // 即使有缓存数据，也刷新一下确保数据最新
-            this.loadTabData(tabName, true)
-            wx.hideNavigationBarLoading()
         }
     },
 

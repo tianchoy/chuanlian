@@ -84,29 +84,61 @@ Page({
     initPage() {
         const { windowHeight, statusBarHeight } = wx.getSystemInfoSync();
         this.setData({
-            swiperHeight: windowHeight - 50 - statusBarHeight // 减去tab栏和状态栏高度
+            swiperHeight: windowHeight - 50 - statusBarHeight
         });
     },
 
-    handleJobBrowsed({ jobId }) {
+    // 处理岗位浏览事件（与求职者页面一致）
+    handleJobBrowsed: async function({ jobId }) {
+        if (!jobId) return;
+
+        // 1. 更新内存状态
+        this.updateJobBrowsedStatus(jobId, true);
+
+        // 2. 持久化到本地缓存（无论是否登录）
+        const localBrowsed = wx.getStorageSync('browsedJobs') || [];
+        if (!localBrowsed.includes(jobId)) {
+            wx.setStorageSync('browsedJobs', [...localBrowsed, jobId]);
+        }
+
+        // 3. 同步到云端（仅限登录用户）
+        const userInfo = wx.getStorageSync('userinfo');
+        if (userInfo?._id) {
+            try {
+                await wx.cloud.callFunction({
+                    name: 'addBrowseRecord',
+                    data: {
+                        userId: userInfo._id,
+                        targetId: jobId,
+                        type: 'job'
+                    }
+                });
+            } catch (err) {
+                console.error('云端同步失败，降级到本地', err);
+            }
+        }
+    },
+
+    // 更新岗位浏览状态（与求职者页面一致）
+    updateJobBrowsedStatus: function(jobId, isBrowsed) {
         this.setData({
             jobLists: Object.fromEntries(
                 Object.entries(this.data.jobLists).map(([title, jobs]) => [
                     title,
-                    jobs.map(job =>
-                        job.id === jobId ? { ...job, isBrowsed: true } : job
+                    jobs.map(job => 
+                        job.id === jobId ? { ...job, isBrowsed } : job
                     )
                 ])
             ),
             cachedJobLists: Object.fromEntries(
                 Object.entries(this.data.cachedJobLists).map(([title, jobs]) => [
                     title,
-                    jobs.map(job =>
-                        job.id === jobId ? { ...job, isBrowsed: true } : job
+                    jobs.map(job => 
+                        job.id === jobId ? { ...job, isBrowsed } : job
                     )
                 ])
             )
-        })
+        });
     },
 
     // 切换筛选面板显示状态
@@ -143,7 +175,7 @@ Page({
             [`currentPages.${currentTabTitle}`]: 1,
             [`jobLists.${currentTabTitle}`]: [],
             [`hasMoreData.${currentTabTitle}`]: false,
-            [`cachedJobLists.${currentTabTitle}`]: [],  // 清空缓存数据
+            [`cachedJobLists.${currentTabTitle}`]: [],
             [`cachedCurrentPages.${currentTabTitle}`]: 1,
             [`cachedHasMoreData.${currentTabTitle}`]: false
         }, () => {
@@ -159,11 +191,11 @@ Page({
         this.setData({
             [`filterLocations.${currentTabTitle}`]: '',
             [`isFiltering.${currentTabTitle}`]: false,
-            filterLocation: '', // 清空输入框
+            filterLocation: '',
             [`currentPages.${currentTabTitle}`]: 1,
             [`jobLists.${currentTabTitle}`]: [],
             [`hasMoreData.${currentTabTitle}`]: false,
-            [`cachedJobLists.${currentTabTitle}`]: [],  // 清空缓存数据
+            [`cachedJobLists.${currentTabTitle}`]: [],
             [`cachedCurrentPages.${currentTabTitle}`]: 1,
             [`cachedHasMoreData.${currentTabTitle}`]: false
         }, () => {
@@ -171,11 +203,10 @@ Page({
         })
     },
 
-    // 为特定分类获取工作
+    // 为特定分类获取工作（修改后的版本）
     async getJobsForTab(tabInfo, initialLoad = false) {
         if (this.data.loadingMore && !initialLoad) return
 
-        // 设置加载状态
         this.setData({ loadingMore: true })
         initialLoad ? this.showLoading() : wx.showNavigationBarLoading()
 
@@ -196,7 +227,10 @@ Page({
             const mappings = this.data.categoryMappings || {}
             const currentMapping = mappings[currentTabTitle] || {}
 
-            // 调用云函数
+            // 1. 先读取本地浏览记录
+            const localBrowsed = wx.getStorageSync('browsedJobs') || []
+
+            // 调用云函数获取岗位数据
             const res = await wx.cloud.callFunction({
                 name: 'getJobs',
                 data: {
@@ -208,59 +242,59 @@ Page({
                     filterLocation: filterLocation
                 }
             })
-            console.log(res.result)
+
             // 处理返回数据
-            const newJobLists = { ...this.data.jobLists }
-            const newCachedJobLists = { ...this.data.cachedJobLists }
-            const newCurrentPages = { ...this.data.currentPages }
-            const newCachedCurrentPages = { ...this.data.cachedCurrentPages }
-            const newHasMoreData = { ...this.data.hasMoreData }
-            const newCachedHasMoreData = { ...this.data.cachedHasMoreData }
+            let newData = res.result.data?.jobs || []
+            newData = newData.map(job => ({
+                ...job,
+                isBrowsed: localBrowsed.includes(String(job.id))
+            }))
 
-            if (initialLoad) {
-                // 初始加载
-                newJobLists[currentTabTitle] = res.result.data?.jobs || []
-                newCachedJobLists[currentTabTitle] = res.result.data?.jobs || []
-            } else {
-                // 加载更多 - 修复括号问题
-                newJobLists[currentTabTitle] = [
-                    ...(newJobLists[currentTabTitle] || []),
-                    ...(res.result.data?.jobs || [])
-                ]
-                newCachedJobLists[currentTabTitle] = [
-                    ...(newCachedJobLists[currentTabTitle] || []),
-                    ...(res.result.data?.jobs || [])
-                ]
+            // 如果是登录用户，再检查云端浏览记录
+            if (this.data.isLogin) {
+                const userInfo = wx.getStorageSync('userinfo')
+                if (userInfo?._id) {
+                    try {
+                        const cloudRes = await wx.cloud.callFunction({
+                            name: 'getBrowsedJobs',
+                            data: { userId: userInfo._id }
+                        })
+                        
+                        // 确保返回的是数组
+                        const cloudBrowsed = Array.isArray(cloudRes.result) 
+                            ? cloudRes.result.map(id => String(id))
+                            : []
+                        
+                        newData = newData.map(job => ({
+                            ...job,
+                            isBrowsed: job.isBrowsed || cloudBrowsed.includes(String(job.id))
+                        }))
+                    } catch (cloudErr) {
+                        console.error('获取云端浏览记录失败:', cloudErr)
+                    }
+                }
             }
 
-            newCurrentPages[currentTabTitle] = currentPage
-            newCachedCurrentPages[currentTabTitle] = currentPage
-            newHasMoreData[currentTabTitle] = res.result.data?.pagination?.hasMore || false
-            newCachedHasMoreData[currentTabTitle] = res.result.data?.pagination?.hasMore || false
+            const currentData = this.data.cachedJobLists[currentTabTitle] || []
 
-            // 处理浏览状态
-            if (this.data.isLogin && newJobLists[currentTabTitle]?.length > 0) {
-                const jobIds = newJobLists[currentTabTitle].map(job => job.id).filter(Boolean)
-                const browsedIds = await checkBrowsedStatus(jobIds, BROWSE_TYPE.JOB)
-
-                newJobLists[currentTabTitle] = newJobLists[currentTabTitle].map(job => ({
-                    ...job,
-                    isBrowsed: browsedIds.includes(job.id)
-                }))
-                newCachedJobLists[currentTabTitle] = newCachedJobLists[currentTabTitle].map(job => ({
-                    ...job,
-                    isBrowsed: browsedIds.includes(job.id)
-                }))
+            // 更新缓存数据
+            const updatedCache = {
+                ...this.data.cachedJobLists,
+                [currentTabTitle]: initialLoad ? newData : [...currentData, ...newData]
             }
 
-            // 更新数据
+            // 更新显示数据
+            const shouldUpdateDisplay = initialLoad || 
+                this.data.tabs[this.data.currentTab]?.name === currentTabTitle
+
             this.setData({
-                jobLists: newJobLists,
-                cachedJobLists: newCachedJobLists,
-                currentPages: newCurrentPages,
-                cachedCurrentPages: newCachedCurrentPages,
-                hasMoreData: newHasMoreData,
-                cachedHasMoreData: newCachedHasMoreData,
+                cachedJobLists: updatedCache,
+                [`currentPages.${currentTabTitle}`]: currentPage,
+                [`hasMoreData.${currentTabTitle}`]: res.result.data?.pagination?.hasMore || false,
+                loadingMore: false,
+                ...(shouldUpdateDisplay && {
+                    [`jobLists.${currentTabTitle}`]: initialLoad ? newData : [...currentData, ...newData]
+                }),
                 initialLoadComplete: true
             })
 
@@ -270,8 +304,8 @@ Page({
                 title: '加载失败',
                 icon: 'none'
             })
-        } finally {
             this.setData({ loadingMore: false })
+        } finally {
             initialLoad ? this.hideLoading() : wx.hideNavigationBarLoading()
         }
     },
@@ -284,12 +318,13 @@ Page({
 
     toDetail(e) {
         const id = e.currentTarget.dataset.id
-        console.log(e)
         if (!id) return
+        
+        // 记录浏览行为（与求职者页面一致）
         if (this.data.isLogin) {
             trackBrowse(id, BROWSE_TYPE.JOB)
         }
-        console.log(id)
+        
         wx.navigateTo({
             url: `/pages/jobDetail/jobDetail?id=${id}`,
         })
@@ -314,21 +349,20 @@ Page({
             this.setData({
                 currentTab: index,
                 [`jobLists.${currentTabTitle}`]: this.data.cachedJobLists[currentTabTitle] || [],
-                [`currentPages.${currentTabTitle}`]: this.data.cachedCurrentPages[currentTabTitle] || 1,
-                [`hasMoreData.${currentTabTitle}`]: this.data.cachedHasMoreData[currentTabTitle] || false
-            }, () => {
-                this.adjustScrollPosition(index)
-                this.getJobsForTab(currentTab, true)
-                // 检查是否需要更新数据（如果缓存数据为空或需要刷新）
-                // if (this.data.cachedJobLists[currentTabTitle]?.length === 0 || 
-                //     this.data.isFiltering[currentTabTitle]) {
-                //     this.getJobsForTab(currentTab, true)
-                // }
+                scrollLeft: this.calculateScrollPosition(index)
             })
+            
+            // 如果缓存数据为空或需要刷新，则重新加载
+            if (this.data.cachedJobLists[currentTabTitle].length === 0 || 
+                this.data.isFiltering[currentTabTitle]) {
+                this.getJobsForTab(currentTab, true)
+            }
         } else {
             // 没有缓存数据，直接加载
-            this.setData({ currentTab: index }, () => {
-                this.adjustScrollPosition(index)
+            this.setData({ 
+                currentTab: index,
+                scrollLeft: this.calculateScrollPosition(index)
+            }, () => {
                 this.getJobsForTab(currentTab, true)
             })
         }
@@ -346,30 +380,29 @@ Page({
             this.setData({
                 currentTab: index,
                 [`jobLists.${currentTabTitle}`]: this.data.cachedJobLists[currentTabTitle] || [],
-                [`currentPages.${currentTabTitle}`]: this.data.cachedCurrentPages[currentTabTitle] || 1,
-                [`hasMoreData.${currentTabTitle}`]: this.data.cachedHasMoreData[currentTabTitle] || false
-            }, () => {
-                this.adjustScrollPosition(index)
-                this.getJobsForTab(currentTab, true)
-                // 检查是否需要更新数据（如果缓存数据为空或需要刷新）
-                // if (this.data.cachedJobLists[currentTabTitle]?.length === 0 || 
-                //     this.data.isFiltering[currentTabTitle]) {
-                //     this.getJobsForTab(currentTab, true)
-                // }
+                scrollLeft: this.calculateScrollPosition(index)
             })
+            
+            // 如果缓存数据为空或需要刷新，则重新加载
+            if (this.data.cachedJobLists[currentTabTitle].length === 0 || 
+                this.data.isFiltering[currentTabTitle]) {
+                this.getJobsForTab(currentTab, true)
+            }
         } else {
             // 没有缓存数据，直接加载
-            this.setData({ currentTab: index }, () => {
-                this.adjustScrollPosition(index)
+            this.setData({ 
+                currentTab: index,
+                scrollLeft: this.calculateScrollPosition(index)
+            }, () => {
                 this.getJobsForTab(currentTab, true)
             })
         }
     },
 
-    adjustScrollPosition(index) {
+    // 计算滚动位置
+    calculateScrollPosition(index) {
         const { tabWidth, screenWidth } = this.data
-        const scrollLeft = index * tabWidth - screenWidth / 2 + tabWidth / 2
-        this.setData({ scrollLeft: Math.max(0, scrollLeft) })
+        return index * tabWidth - screenWidth / 2 + tabWidth / 2
     },
 
     showLoading() {
@@ -381,14 +414,13 @@ Page({
     },
 
     onShow() {
-        console.log('onshow', this.data.currentTab)
         if (!this.data.isLogin) {
             this.getUserId()
         }
     },
 
     loadMore(e) {
-        const category = e.currentTarget.dataset.category;
+        const category = e.currentTarget.dataset.category
         if (this.data.hasMoreData[category] && !this.data.loadingMore) {
             const currentTab = this.data.tabs.find(tab => tab.name === category)
             if (currentTab) {
@@ -396,8 +428,11 @@ Page({
             }
         }
     },
-    onTabItemTap(item) {
-        const currentTab = this.data.currentTab
-        this.getJobsForTab(currentTab, true)
-    },
+
+    onTabItemTap() {
+        const currentTab = this.data.tabs[this.data.currentTab]
+        if (currentTab) {
+            this.getJobsForTab(currentTab, true)
+        }
+    }
 })
