@@ -88,7 +88,7 @@ Page({
         });
     },
 
-    // 处理岗位浏览事件（与求职者页面一致）
+    // 处理岗位浏览事件
     handleJobBrowsed: async function({ jobId }) {
         if (!jobId) return;
 
@@ -119,7 +119,7 @@ Page({
         }
     },
 
-    // 更新岗位浏览状态（与求职者页面一致）
+    // 更新岗位浏览状态
     updateJobBrowsedStatus: function(jobId, isBrowsed) {
         this.setData({
             jobLists: Object.fromEntries(
@@ -320,7 +320,7 @@ Page({
         const id = e.currentTarget.dataset.id
         if (!id) return
         
-        // 记录浏览行为（与求职者页面一致）
+        // 记录浏览行为
         if (this.data.isLogin) {
             trackBrowse(id, BROWSE_TYPE.JOB)
         }
@@ -344,7 +344,7 @@ Page({
 
         const currentTabTitle = currentTab.name
 
-        // 先显示缓存数据（如果有）
+        // 先显示缓存数据
         if (this.data.cachedJobLists[currentTabTitle]) {
             this.setData({
                 currentTab: index,
